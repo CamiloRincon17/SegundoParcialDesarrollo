@@ -1,0 +1,25 @@
+{
+  "files.associations": {
+    "*.vue": "vue",
+    "*.js": "javascript",
+    "*.json": "json"
+  },
+  "typescript.validate.enable": false,
+  "typescript.tsdk": null,
+  "javascript.validate.enable": true,
+  "files.exclude": {
+    "**/*.ts": false,
+    "**/*.tsx": false
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/node_modules - copia": true,
+    "**/dist": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/node_modules - copia/**": true,
+    "**/dist/**": true
+  }
+}
+

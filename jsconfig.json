@@ -1,19 +1,35 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "baseUrl": "./",
-    "moduleResolution": "node",
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "src/*"
       ]
     },
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es5",
     "lib": [
       "esnext",
       "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
-  }
+      "dom.iterable"
+    ],
+    "jsx": "preserve",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.js",
+    "src/**/*.vue",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "node_modules - copia",
+    "dist",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }
