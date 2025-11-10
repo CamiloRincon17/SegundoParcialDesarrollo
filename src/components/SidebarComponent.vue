@@ -1,22 +1,50 @@
 <template>
-  <footer>
-    <p>&copy; 2024 Mi Aplicación. Todos los derechos reservados.</p>
-    <!-- Puedes agregar más contenido aquí, como enlaces a redes sociales, etc. -->
-  </footer>
+  <div class="sidebar p-3">
+    <div class="d-flex flex-column h-100">
+      <h3 class="mb-4">Cinema Admin</h3>
+      <nav class="nav flex-column">
+        <router-link 
+          class="nav-link text-white" 
+          :class="{ active: $route.path === '/dashboard' }"
+          to="/dashboard"
+        >
+          Dashboard
+        </router-link>
+        <router-link 
+          class="nav-link text-white" 
+          :class="{ active: $route.path.includes('/productos') }"
+          to="/dashboard/productos"
+        >
+          Películas
+        </router-link>
+      </nav>
+      <div class="mt-auto">
+        <button class="btn btn-outline-light w-100" @click="logout">
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'SideconComponent'
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem('isAuthenticated')
+  localStorage.removeItem('userRole')
+  router.push('/login')
 }
 </script>
 
 <style scoped>
-footer {
-  margin-top: 40px;
-  padding: 20px;
-  background-color: #f2f2f2;
-  text-align: center;
-  color: #666;
+.nav-link.active {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.nav-link:hover {
+  background-color: rgba(255,255,255,0.05);
 }
 </style>

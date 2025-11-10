@@ -1,13 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '../views/LoginView.vue'
-import DashboardView from '../views/DashboardView.vue'
+import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ProductoView from '../views/ProductoView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const routes = [
   { path: '/', redirect: '/productos' },
   { path: '/login', name: 'login', component: LoginView },
-  { path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true } },
-  { path: '/productos', name: 'productos', component: ProductoView } // Quitamos meta: { requiresAuth: true }
+  {
+    path: '/dashboard',
+    component: DashboardLayout,
+    meta: { requiresAuth: true, role: 'admin' },
+    children: [
+      { path: '', redirect: 'productos' },
+      { path: 'productos', name: 'dashboard-productos', component: ProductoView }
+    ]
+  },
+  { path: '/productos', name: 'public-productos', component: ProductoView, meta: { requiresAuth: true } } // si quieres accesible fuera del dashboard
 ]
 
 const router = createRouter({
@@ -18,28 +26,24 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
   const userRole = localStorage.getItem('userRole')
-  
-  // Si va al login y ya está autenticado
-  if (to.path === '/login' && isAuthenticated) {
-    next('/productos')
-    return
-  }
-  
-  // Proteger ruta de dashboard solo para admin
-  if (to.path === '/dashboard') {
-    if (!isAuthenticated || userRole !== 'admin') {
-      next('/productos')
-      return
+
+  if (to.meta.requiresAuth) {
+    if (isAuthenticated) {
+      if (to.meta.role && to.meta.role !== userRole) {
+        // Si el rol no es el correcto, redirigir
+        next({ name: 'public-productos' }) // o a una página de "no autorizado"
+      } else {
+        // Si está autenticado y tiene el rol correcto (o no se requiere rol)
+        next()
+      }
+    } else {
+      // Si no está autenticado, redirigir al login
+      next({ name: 'login' })
     }
+  } else {
+    // Si la ruta no requiere autenticación
+    next()
   }
-  
-  // Si requiere autenticación y no está autenticado
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
-    return
-  }
-  
-  next()
 })
 
 export default router

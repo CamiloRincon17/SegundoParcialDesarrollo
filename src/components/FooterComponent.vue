@@ -1,7 +1,8 @@
 <template>
-  <footer>
-    <p>&copy; 2025 Mi Aplicación. Todos los derechos reservados.</p>
-    <!-- Puedes agregar más contenido aquí, como enlaces a redes sociales, etc. -->
+  <footer class="footer mt-auto py-3 bg-light">
+    <div class="container text-center">
+      <span class="text-muted">© 2023 Cinema Admin. Todos los derechos reservados.</span>
+    </div>
   </footer>
 </template>
 
@@ -10,13 +11,3 @@ export default {
   name: 'FooterComponent'
 }
 </script>
-
-<style scoped>
-footer {
-  margin-top: 40px;
-  padding: 20px;
-  background-color: #f2f2f2;
-  text-align: center;
-  color: #666;
-}
-</style>

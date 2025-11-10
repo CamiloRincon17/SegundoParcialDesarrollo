@@ -1,63 +1,51 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/">Navbar</router-link>
-
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+      <a class="navbar-brand" href="#">Cinema Admin</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <router-link class="nav-link" to="/dashboard">Dashboard</router-link>
+            <span class="nav-link">{{ username }}</span>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/productos">Productos</router-link>
+            <button class="btn btn-outline-light" @click="logout">
+              Cerrar Sesión
+            </button>
           </li>
         </ul>
-
-        <div class="d-flex">
-          <ul class="navbar-nav">
-            <!-- Si el usuario está autenticado -->
-            <li class="nav-item" v-if="isAuthenticated">
-              <span class="nav-link">Bienvenido, {{ username }}</span>
-            </li>
-            <li class="nav-item" v-if="isAuthenticated">
-              <button class="btn btn-outline-danger" @click="logout">Cerrar Sesión</button>
-            </li>
-
-            <!-- Si NO está autenticado -->
-            <li class="nav-item" v-else>
-              <router-link class="btn btn-outline-success" to="/login">
-                Iniciar Sesión
-              </router-link>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   </nav>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const isAuthenticated = ref(localStorage.getItem('isAuthenticated') === 'true')
-const username = ref(localStorage.getItem('username') || 'Usuario')
+export default {
+  name: 'NavbarComponent',
+  setup() {
+    const router = useRouter()
+    const username = ref('')
 
-const logout = () => {
-  localStorage.removeItem('isAuthenticated')
-  localStorage.removeItem('username')
-  isAuthenticated.value = false
-  window.location.href = '/' // redirige al inicio
+    onMounted(() => {
+      username.value = localStorage.getItem('username') || 'Usuario'
+    })
+
+    const logout = () => {
+      localStorage.removeItem('isAuthenticated')
+      localStorage.removeItem('userRole')
+      localStorage.removeItem('username')
+      router.push('/login')
+    }
+
+    return {
+      username,
+      logout
+    }
+  }
 }
 </script>

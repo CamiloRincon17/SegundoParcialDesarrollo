@@ -1,9 +1,9 @@
 <template>
   <div class="login-container">
     <div class="row h-100">
-      <!-- Lado izquierdo: texto o imagen -->
+      <!-- Lado izquierdo: texto -->
       <div class="col-md-6 d-flex justify-content-center align-items-center">
-        <div class="text-white">
+        <div class="text-white px-5">
           <h1>Las mejores pelis 🍿</h1>
           <p>Disfruta del mejor catálogo de películas con nosotros.</p>
         </div>
@@ -11,20 +11,25 @@
 
       <!-- Lado derecho: login -->
       <div class="col-md-6 d-flex justify-content-center align-items-center">
-        <div class="card shadow p-4" style="width: 350px;">
-          <h2 class="text-center mb-4">Iniciar Sesión</h2>
+        <div class="card shadow p-4" style="width:380px;">
+          <h2 class="text-center mb-3">Iniciar Sesión</h2>
+
+          <div v-if="alert.message" :class="`alert alert-${alert.type}`" role="alert">
+            {{ alert.message }}
+          </div>
+
           <form @submit.prevent="login">
             <div class="mb-3">
               <label for="username" class="form-label">Usuario</label>
-              <input v-model="username" type="text" id="username" class="form-control" required />
+              <input id="username" v-model="username" type="text" class="form-control" />
             </div>
 
             <div class="mb-3">
               <label for="password" class="form-label">Contraseña</label>
-              <input v-model="password" type="password" id="password" class="form-control" required />
+              <input id="password" v-model="password" type="password" class="form-control" />
             </div>
 
-            <button type="submit" class="btn btn-success w-100">Entrar</button>
+            <button class="btn btn-success w-100" type="submit">Entrar</button>
           </form>
         </div>
       </div>
@@ -35,33 +40,38 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import usuarios from '../data/usuarios.json' // archivo local con usuarios
 
 const username = ref('')
 const password = ref('')
 const router = useRouter()
 
-// Credenciales de administrador quemadas
-const ADMIN_CREDENTIALS = {
-  username: 'admin',
-  password: 'admin123'
-}
+const alert = ref({ message: '', type: 'danger' })
 
 const login = () => {
-  if (username.value && password.value) {
-    // Verificar si son las credenciales de admin
-    if (username.value === ADMIN_CREDENTIALS.username && 
-        password.value === ADMIN_CREDENTIALS.password) {
-      localStorage.setItem('isAuthenticated', 'true')
-      localStorage.setItem('userRole', 'admin')
+  if (!username.value || !password.value) {
+    alert.value = { message: 'Por favor ingresa usuario y contraseña', type: 'warning' }
+    return
+  }
+
+  const user = usuarios.find(u => u.username === username.value && u.password === password.value)
+
+  if (user) {
+    // Guardar sesión básica
+    localStorage.setItem('isAuthenticated', 'true')
+    localStorage.setItem('userRole', user.role || 'user')
+    localStorage.setItem('username', user.username)
+
+    // Redirigir según rol
+    if (user.role === 'admin') {
       router.push('/dashboard')
     } else {
-      // Usuario normal
-      localStorage.setItem('isAuthenticated', 'true')
-      localStorage.setItem('userRole', 'user')
       router.push('/productos')
     }
   } else {
-    alert('Por favor, ingresa tus credenciales')
+    alert.value = { message: 'Credenciales inválidas', type: 'danger' }
+    // limpiar alerta luego de 3s
+    setTimeout(() => { alert.value = { message: '', type: 'danger' } }, 3000)
   }
 }
 </script>

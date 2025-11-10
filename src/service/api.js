@@ -1,0 +1,13 @@
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: 'http://localhost:3000'
+})
+
+export const getMovies = () => api.get('/movies')
+export const getMovie = (id) => api.get(`/movies/${id}`)
+export const createMovie = (data) => api.post('/movies', data)
+export const updateMovie = (id, data) => api.put(`/movies/${id}`, data)
+export const deleteMovie = (id) => api.delete(`/movies/${id}`)
+
+export default api

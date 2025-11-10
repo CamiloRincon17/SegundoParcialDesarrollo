@@ -2,76 +2,68 @@
   <div class="dashboard-container">
     <div class="container-fluid">
       <div class="row mb-4">
-        <div class="col-12">
+        <div class="col-12 d-flex justify-content-between align-items-center">
           <h1 class="my-4">Películas</h1>
-          
-          <!-- Barra de herramientas -->
-          <div class="toolbar d-flex gap-3 mb-4">
-            <button class="btn btn-danger" @click="showAddModal = true">
-              + Añadir película
-            </button>
-            <div class="d-flex gap-2 flex-grow-1">
-              <input 
-                type="text" 
-                class="form-control" 
-                placeholder="Ingrese un título..."
-                v-model="searchQuery"
-              />
-              <select class="form-select w-auto" v-model="yearFilter">
-                <option value="">Año</option>
-                <option v-for="year in years" :key="year" :value="year">
-                  {{ year }}
-                </option>
-              </select>
-              <select class="form-select w-auto" v-model="genreFilter">
-                <option value="">Género</option>
-                <option value="Accion">Acción</option>
-                <option value="Terror">Terror</option>
-                <option value="Comedia">Comedia</option>
-              </select>
-              <button class="btn btn-primary" @click="buscar">Buscar</button>
-            </div>
+          <div v-if="userRole === 'admin'">
+            <button class="btn btn-danger me-2" @click="onAdd">+ Añadir película</button>
           </div>
+        </div>
+      </div>
 
-          <!-- Tabla de películas -->
+      <!-- filtros -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="d-flex gap-2">
+            <input v-model="searchQuery" class="form-control" placeholder="Ingrese un título..." />
+            <select v-model="yearFilter" class="form-select w-auto">
+              <option value="">Año</option>
+              <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+            </select>
+            <select v-model="genreFilter" class="form-select w-auto">
+              <option value="">Género</option>
+              <option value="Accion">Acción</option>
+              <option value="Terror">Terror</option>
+              <option value="Comedia">Comedia</option>
+            </select>
+            <button class="btn btn-primary" @click="buscar">Buscar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- tabla -->
+      <div class="row">
+        <div class="col-12">
           <div class="table-responsive">
-            <table class="table">
-              <thead>
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
                 <tr>
                   <th>Poster</th>
                   <th>Título</th>
                   <th>Género</th>
                   <th>Año</th>
-                  <th>Precio de venta</th>
-                  <th>Precio de alquiler</th>
+                  <th>Precio venta</th>
+                  <th>Precio alquiler</th>
                   <th>Existencia</th>
-                  <th>Acciones</th>
+                  <th v-if="userRole === 'admin'">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="movie in movies" :key="movie.id">
-                  <td>
-                    <img :src="movie.poster" class="movie-poster" :alt="movie.title">
+                <tr v-for="m in displayedMovies" :key="m.id">
+                  <td><img :src="m.poster" class="movie-poster" alt="" /></td>
+                  <td>{{ m.title }}</td>
+                  <td>{{ m.genre }}</td>
+                  <td>{{ m.year }}</td>
+                  <td>{{ m.salePrice.toFixed(2) }}</td>
+                  <td>{{ (m.rentPrice ?? 0).toFixed(2) }}</td>
+                  <td>{{ m.stock ?? '-' }}</td>
+                  <td v-if="userRole === 'admin'">
+                    <button class="btn btn-sm btn-primary me-1" @click="editMovie(m)">Editar</button>
+                    <button class="btn btn-sm btn-success me-1" @click="verMovie(m)">Ver</button>
+                    <button class="btn btn-sm btn-danger" @click="deleteMovie(m)">Borrar</button>
                   </td>
-                  <td>{{ movie.title }}</td>
-                  <td>{{ movie.genre }}</td>
-                  <td>{{ movie.year }}</td>
-                  <td>${{ movie.salePrice }}</td>
-                  <td>${{ movie.rentPrice }}</td>
-                  <td>{{ movie.stock }}</td>
-                  <td>
-                    <div class="btn-group">
-                      <button class="btn btn-sm btn-primary" @click="editMovie(movie)">
-                        Editar
-                      </button>
-                      <button class="btn btn-sm btn-success" @click="verMovie(movie)">
-                        Ver
-                      </button>
-                      <button class="btn btn-sm btn-danger" @click="deleteMovie(movie)">
-                        Borrar
-                      </button>
-                    </div>
-                  </td>
+                </tr>
+                <tr v-if="displayedMovies.length === 0">
+                  <td colspan="8" class="text-center">No hay películas</td>
                 </tr>
               </tbody>
             </table>
@@ -79,20 +71,20 @@
         </div>
       </div>
     </div>
+
+    <!-- modal -->
+    <MovieModal
+      :show="showAddModal"
+      :movie="selectedMovie"
+      :isEdit="!!selectedMovie"
+      @close="closeModal"
+      @save="saveMovie"
+    />
   </div>
-  
-  <!-- Añadir el modal -->
-  <MovieModal 
-    :show="showAddModal" 
-    :movie="selectedMovie"
-    :isEdit="!!selectedMovie"
-    @close="closeModal"
-    @save="saveMovie"
-  />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import MovieModal from '../components/MovieModal.vue'
 
 const searchQuery = ref('')
@@ -100,93 +92,66 @@ const yearFilter = ref('')
 const genreFilter = ref('')
 const showAddModal = ref(false)
 const selectedMovie = ref(null)
+const userRole = ref(localStorage.getItem('userRole'))
 
 const movies = ref([
-  {
-    id: 1,
-    title: 'Venom',
-    genre: 'Accion',
-    year: 2018,
-    salePrice: 10.73,
-    rentPrice: 3.99,
-    stock: 35,
-    poster: 'https://example.com/venom-poster.jpg'
-  },
-  // Añade más películas aquí
+  { id: 1, title: 'Venom', genre: 'Accion', year: 2018, salePrice: 10.73, rentPrice: 3.99, stock: 35, poster: 'https://i.imgur.com/placeholder.png' },
+  { id: 2, title: 'Bad Boys', genre: 'Accion', year: 2020, salePrice: 11.99, rentPrice: 4.99, stock: 24, poster: 'https://i.imgur.com/placeholder2.png' }
 ])
 
 const years = [2024, 2023, 2022, 2021, 2020, 2019, 2018]
+
+const displayedMovies = computed(() => {
+  let list = [...movies.value]
+  if (searchQuery.value) {
+    list = list.filter(m => m.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  }
+  if (yearFilter.value) list = list.filter(m => String(m.year) === String(yearFilter.value))
+  if (genreFilter.value) list = list.filter(m => m.genre === genreFilter.value)
+  return list
+})
+
+const onAdd = () => {
+  selectedMovie.value = null
+  showAddModal.value = true
+}
+
+const editMovie = (movie) => {
+  selectedMovie.value = { ...movie } // pasar copia
+  showAddModal.value = true
+}
+
+const saveMovie = (movieData) => {
+  // si viene con id actualiza, si no crea nuevo
+  if (movieData.id) {
+    const idx = movies.value.findIndex(m => m.id === movieData.id)
+    if (idx !== -1) movies.value.splice(idx, 1, { ...movieData })
+  } else {
+    const newId = Math.max(0, ...movies.value.map(m => m.id)) + 1
+    movies.value.push({ ...movieData, id: newId })
+  }
+}
+
+const deleteMovie = (movie) => {
+  if (!confirm('¿Seguro que desea eliminar esta película?')) return
+  const idx = movies.value.findIndex(m => m.id === movie.id)
+  if (idx !== -1) movies.value.splice(idx, 1)
+}
+
+const verMovie = (movie) => {
+  // puedes abrir un modal detalle o redirigir a una vista
+  alert(`Ver: ${movie.title}`)
+}
 
 const closeModal = () => {
   showAddModal.value = false
   selectedMovie.value = null
 }
 
-const editMovie = (movie) => {
-  selectedMovie.value = { ...movie }
-  showAddModal.value = true
-}
-
-const saveMovie = (movieData) => {
-  if (selectedMovie.value) {
-    // Actualizar película existente
-    const index = movies.value.findIndex(m => m.id === movieData.id)
-    if (index !== -1) {
-      movies.value[index] = movieData
-    }
-  } else {
-    // Añadir nueva película
-    const newMovie = {
-      ...movieData,
-      id: Math.max(0, ...movies.value.map(m => m.id)) + 1
-    }
-    movies.value.push(newMovie)
-  }
-  closeModal()
-}
-
-const deleteMovie = (movie) => {
-  if (confirm('¿Está seguro de eliminar esta película?')) {
-    const index = movies.value.findIndex(m => m.id === movie.id)
-    if (index !== -1) {
-      movies.value.splice(index, 1)
-    }
-  }
-}
-
-const verMovie = (movie) => {
-  // Aquí puedes implementar la vista detallada de la película
-  console.log('Ver película:', movie)
-}
-
 const buscar = () => {
-  // Implementar filtrado
-  let filteredMovies = [...movies.value]
-  
-  if (searchQuery.value) {
-    filteredMovies = filteredMovies.filter(movie => 
-      movie.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  }
-  
-  if (yearFilter.value) {
-    filteredMovies = filteredMovies.filter(movie => 
-      movie.year === yearFilter.value
-    )
-  }
-  
-  if (genreFilter.value) {
-    filteredMovies = filteredMovies.filter(movie => 
-      movie.genre === genreFilter.value
-    )
-  }
-  
-  movies.value = filteredMovies
+  // displayedMovies es reactivo, solo resetea filtros si quieres
+  // aquí solo dejamos que el computed haga su trabajo
 }
-
-onMounted(() => {
-  // Cargar datos iniciales
-})
 </script>
 
 <style scoped>
@@ -201,14 +166,5 @@ onMounted(() => {
   height: 70px;
   object-fit: cover;
   border-radius: 4px;
-}
-
-.table {
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.btn-group {
-  gap: 5px;
 }
 </style>
