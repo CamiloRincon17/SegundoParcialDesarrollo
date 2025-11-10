@@ -68,15 +68,11 @@ Ejemplo breve:
 
 ## Evidencia colaborativa
 - Ramas de features, PRs y commits en GitHub (agregar enlaces):
-  - Branch: <enlace>
-  - Pull Request: <enlace>
-  - Historial de commits: <enlace>
+  - Branch: <https://github.com/CamiloRincon17/SegundoParcialDesarrollo/branches>
+  - Pull Request: <https://github.com/CamiloRincon17/SegundoParcialDesarrollo/pulls?q=is%3Apr+is%3Aclosed>
+  - Historial de commits: <https://github.com/CamiloRincon17/SegundoParcialDesarrollo/commits/main/>
 
-## Sustentación sugerida (guía)
-- Mostrar estructura (carpetas y responsabilidades).
-- Explicar login educativo y redirecciones por rol.
-- Demostrar el CRUD: listar, crear, editar, eliminar (API JSON Server).
-- Explicar cómo se aplicó Bootstrap y los estilos en `custom.scss`.
+
 
 ## Nota
 El login es únicamente educativo y no representa un sistema real de autenticación.
