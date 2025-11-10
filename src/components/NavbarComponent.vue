@@ -1,7 +1,8 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/productos">Cinema Admin</router-link>
+      <!-- se linkea el nombre como si fuera un boton para mandarte a la parte de productos -->
+      <router-link class="navbar-brand" to="/productos">Cinema plus</router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -31,12 +32,11 @@
 
 <script>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'NavbarComponent',
   setup() {
-    const router = useRouter()
     const route = useRoute()
     const username = ref('')
     const isAuthenticated = ref(false)
@@ -73,8 +73,8 @@ export default {
       localStorage.removeItem('isAuthenticated')
       localStorage.removeItem('userRole')
       localStorage.removeItem('username')
-      updateAuthState()
-      router.push('/productos')
+      // Recargar la página para limpiar todo el estado
+      window.location.href = '/productos'
     }
 
     return {

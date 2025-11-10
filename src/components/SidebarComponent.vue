@@ -28,14 +28,12 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
 const logout = () => {
   localStorage.removeItem('isAuthenticated')
   localStorage.removeItem('userRole')
-  router.push('/login')
+  localStorage.removeItem('username')
+  // Recargar la página para limpiar todo el estado
+  window.location.href = '/login'
 }
 </script>
 

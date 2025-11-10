@@ -1,7 +1,7 @@
 {
   "movies": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Venom",
       "genre": "Acción",
       "year": 2018,
@@ -11,7 +11,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "Bad Boys",
       "genre": "Acción",
       "year": 2020,
@@ -19,16 +19,6 @@
       "rentPrice": 4.99,
       "stock": 24,
       "poster": "https://image.tmdb.org/t/p/w500/sy6DvAu72kjoseZEjocnm2ZZ09i.jpg"
-    },
-    {
-      "title": "no se",
-      "genre": "Acción",
-      "year": 2025,
-      "salePrice": 0,
-      "rentPrice": 0,
-      "stock": 0,
-      "poster": "",
-      "id": "b712"
     }
   ]
 }
