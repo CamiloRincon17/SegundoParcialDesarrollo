@@ -19,6 +19,33 @@
       "rentPrice": 4.99,
       "stock": 24,
       "poster": "https://image.tmdb.org/t/p/w500/sy6DvAu72kjoseZEjocnm2ZZ09i.jpg"
+    },
+    {
+      "id": "9a39",
+      "title": "el padrino",
+      "genre": "Comedia",
+      "year": 2025,
+      "price": 15000,
+      "image": "",
+      "description": ""
+    },
+    {
+      "id": "4",
+      "title": "Interestelar",
+      "genre": "Ciencia Ficción",
+      "year": 2014,
+      "price": 55000,
+      "image": "https://images.justwatch.com/poster/191589184/s718/interstellar.jpg",
+      "description": "Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento de asegurar la supervivencia de la humanidad."
+    },
+    {
+      "id": "5",
+      "title": "La La Land",
+      "genre": "Musical",
+      "year": 2016,
+      "price": 30000,
+      "image": "https://image.tmdb.org/t/p/w500/qA5GFD63z601Yg8Pz21v5b0d06.jpg",
+      "description": "Una aspirante a actriz y un músico de jazz se enamoran en Los Ángeles."
     }
   ]
 }
