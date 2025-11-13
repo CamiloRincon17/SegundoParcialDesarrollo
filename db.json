@@ -4,30 +4,28 @@
       "id": "1",
       "title": "Venom",
       "genre": "Acción",
-      "year": 2018,
-      "salePrice": 10.73,
-      "rentPrice": 3.99,
-      "stock": 35,
-      "poster": "https://image.tmdb.org/t/p/w500/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg"
+      "year": 2025,
+      "price": 35000,
+      "image": "https://image.tmdb.org/t/p/w500/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg",
+      "description": "Un periodista se une a un simbionte alienígena para luchar contra el crimen."
     },
     {
       "id": "2",
       "title": "Bad Boys",
       "genre": "Acción",
-      "year": 2020,
-      "salePrice": 11.99,
-      "rentPrice": 4.99,
-      "stock": 24,
-      "poster": "https://image.tmdb.org/t/p/w500/sy6DvAu72kjoseZEjocnm2ZZ09i.jpg"
+      "year": 2025,
+      "price": 40000,
+      "image": "https://image.tmdb.org/t/p/w500/sy6DvAu72kjoseZEjocnm2ZZ09i.jpg",
+      "description": "Dos detectives de Miami se enfrentan a un nuevo caso lleno de acción y comedia."
     },
     {
       "id": "9a39",
       "title": "el padrino",
-      "genre": "Comedia",
-      "year": 2025,
+      "genre": "Drama",
+      "year": 2023,
       "price": 15000,
-      "image": "",
-      "description": ""
+      "image": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1PhCaIg.jpg",
+      "description": "Un clásico del cine sobre la mafia y la familia Corleone."
     },
     {
       "id": "4",
@@ -35,17 +33,228 @@
       "genre": "Ciencia Ficción",
       "year": 2014,
       "price": 55000,
-      "image": "https://images.justwatch.com/poster/191589184/s718/interstellar.jpg",
+      "image": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCUYxFMhhLpt.jpg",
       "description": "Un equipo de exploradores viaja a través de un agujero de gusano en el espacio en un intento de asegurar la supervivencia de la humanidad."
     },
     {
       "id": "5",
       "title": "La La Land",
-      "genre": "Musical",
+      "genre": "Drama",
       "year": 2016,
       "price": 30000,
       "image": "https://image.tmdb.org/t/p/w500/qA5GFD63z601Yg8Pz21v5b0d06.jpg",
       "description": "Una aspirante a actriz y un músico de jazz se enamoran en Los Ángeles."
+    },
+    {
+      "id": "6",
+      "title": "Superman: Legacy",
+      "genre": "Acción",
+      "year": 2024,
+      "releaseDate": "Julio 2025",
+      "price": 60000,
+      "image": "https://image.tmdb.org/t/p/w500/kHlX3oqdD4Vccg2J1rY1c0y9b8.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/kHlX3oqdD4Vccg2J1rY1c0y9b8.jpg",
+      "description": "Un nuevo Superman para una nueva era, reiniciando el universo DC."
+    },
+    {
+      "id": "7",
+      "title": "The Dark Knight",
+      "genre": "Acción",
+      "year": 2008,
+      "price": 45000,
+      "image": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+      "description": "Batman se enfrenta a su mayor desafío, el Joker, un anarquista que busca sumir a Gotham en el caos."
+    },
+    {
+      "id": "8",
+      "title": "Pulp Fiction",
+      "genre": "Drama",
+      "year": 1994,
+      "price": 38000,
+      "image": "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
+      "description": "Las vidas de dos sicarios, un boxeador, la esposa de un gánster y un par de bandidos se entrelazan en una historia de violencia y redención."
+    },
+    {
+      "id": "9",
+      "title": "Forrest Gump",
+      "genre": "Drama",
+      "year": 1994,
+      "price": 32000,
+      "image": "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
+      "description": "La historia de un hombre con un coeficiente intelectual bajo que presencia y participa en algunos de los eventos más importantes del siglo XX."
+    },
+    {
+      "id": "10",
+      "title": "Inception",
+      "genre": "Ciencia Ficción",
+      "year": 2010,
+      "price": 50000,
+      "image": "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+      "description": "Un ladrón que roba secretos corporativos a través del uso de la tecnología de compartir sueños, se le da la tarea inversa de plantar una idea en la mente de un CEO."
+    },
+    {
+      "id": "11",
+      "title": "The Matrix",
+      "genre": "Ciencia Ficción",
+      "year": 1999,
+      "price": 42000,
+      "image": "https://image.tmdb.org/t/p/w500/f89JAYsAFYdsEVaMvudbbG1wNfl.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/f89JAYsAFYdsEVaMvudbbG1wNfl.jpg",
+      "description": "Un programador de computadoras descubre que su realidad es una simulación y se une a una rebelión para liberar a la humanidad."
+    },
+    {
+      "id": "12",
+      "title": "The Silence of the Lambs",
+      "genre": "Thriller",
+      "year": 1991,
+      "price": 37000,
+      "image": "https://image.tmdb.org/t/p/w500/uS9mCrhS9a8a1S5vCeI0aYx2A9b.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/uS9mCrhS9a8a1S5vCeI0aYx2A9b.jpg",
+      "description": "Una joven cadete del FBI debe buscar la ayuda de un brillante pero demente asesino en serie para atrapar a otro asesino."
+    },
+    {
+      "id": "13",
+      "title": "Spirited Away",
+      "genre": "Animación",
+      "year": 2001,
+      "price": 35000,
+      "image": "https://image.tmdb.org/t/p/w500/39wmItIW2asRMyFFSQD2g6I96Ie.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/39wmItIW2asRMyFFSQD2g6I96Ie.jpg",
+      "description": "Durante la mudanza de su familia a los suburbios, una niña de 10 años deambula por un mundo gobernado por dioses, brujas y espíritus."
+    },
+    {
+      "id": "14",
+      "title": "Parasite",
+      "genre": "Thriller",
+      "year": 2025,
+      "price": 48000,
+      "image": "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+      "description": "La codicia y la discriminación de clase amenazan la recién formada relación simbiótica entre la rica familia Park y el indigente clan Kim."
+    },
+    {
+      "id": "15",
+      "title": "Gladiator",
+      "genre": "Acción",
+      "year": 2000,
+      "price": 40000,
+      "image": "https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg",
+      "description": "Un general romano traicionado se convierte en esclavo y luego en gladiador, buscando venganza contra el emperador que asesinó a su familia."
+    },
+    {
+      "id": "16",
+      "title": "The Lion King",
+      "genre": "Animación",
+      "year": 1994,
+      "price": 30000,
+      "image": "https://image.tmdb.org/t/p/w500/sKCr78MXSLix2gjV3fC9sn6M7c.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/sKCr78MXSLix2gjV3fC9sn6M7c.jpg",
+      "description": "Un joven león príncipe es exiliado después de la muerte de su padre, solo para aprender el verdadero significado de la responsabilidad y la valentía."
+    },
+    {
+      "id": "17",
+      "title": "Back to the Future",
+      "genre": "Ciencia Ficción",
+      "year": 1985,
+      "price": 35000,
+      "image": "https://image.tmdb.org/t/p/w500/fNOH9f1aA7XRTzl1sAOx9iF553Q.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/fNOH9f1aA7XRTzl1sAOx9iF553Q.jpg",
+      "description": "Un adolescente es enviado accidentalmente 30 años al pasado en un DeLorean que viaja en el tiempo, inventado por su excéntrico amigo científico."
+    },
+    {
+      "id": "18",
+      "title": "Jurassic Park",
+      "genre": "Aventura",
+      "year": 1993,
+      "price": 38000,
+      "image": "https://image.tmdb.org/t/p/w500/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg",
+      "description": "Un parque temático sufre una falla de seguridad crítica que permite que sus dinosaurios clonados se escapen."
+    },
+    {
+      "id": "19",
+      "title": "The Shining",
+      "genre": "Terror",
+      "year": 1980,
+      "price": 36000,
+      "image": "https://image.tmdb.org/t/p/w500/5i3O2g4KTw5saR239yL339L1vty.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/5i3O2g4KTw5saR239yL339L1vty.jpg",
+      "description": "Una familia se dirige a un hotel aislado durante el invierno, donde una presencia siniestra influye en el padre hacia la violencia."
+    },
+    {
+      "id": "20",
+      "title": "Alien",
+      "genre": "Terror",
+      "year": 1979,
+      "price": 39000,
+      "image": "https://image.tmdb.org/t/p/w500/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg",
+      "description": "La tripulación de una nave espacial comercial se encuentra con una forma de vida mortal después de investigar una transmisión desconocida."
+    },
+    {
+      "id": "21",
+      "title": "Toy Story",
+      "genre": "Animación",
+      "year": 1995,
+      "price": 28000,
+      "image": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg",
+      "description": "Un vaquero de juguete se siente profundamente amenazado y celoso cuando una nueva figura de acción de un astronauta lo suplanta como el juguete principal en el cuarto de un niño."
+    },
+    {
+      "id": "22",
+      "title": "Coco",
+      "genre": "Animación",
+      "year": 2017,
+      "price": 41000,
+      "image": "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg",
+      "description": "El aspirante a músico Miguel, enfrentado a la prohibición ancestral de la música de su familia, entra en la Tierra de los Muertos para encontrar a su tatarabuelo, un legendario cantante."
+    },
+    {
+      "id": "23",
+      "title": "Joker",
+      "genre": "Drama",
+      "year": 2019,
+      "price": 47000,
+      "image": "https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg",
+      "description": "En Gotham City, el comediante con problemas mentales Arthur Fleck es ignorado y maltratado por la sociedad. Se embarca en una espiral descendente de revolución y crimen sangriento."
+    },
+    {
+      "id": "24",
+      "title": "Avengers: Endgame",
+      "genre": "Acción",
+      "year": 2019,
+      "price": 55000,
+      "image": "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+      "description": "Después de los devastadores eventos de Avengers: Infinity War, el universo está en ruinas. Con la ayuda de los aliados restantes, los Vengadores se reúnen una vez más para revertir las acciones de Thanos."
+    },
+    {
+      "id": "25",
+      "title": "Spider-Man: No Way Home",
+      "genre": "Acción",
+      "year": 2021,
+      "price": 58000,
+      "image": "https://image.tmdb.org/t/p/w500/1g0dhYtq4irDe3GPPDuN825G0wF.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/1g0dhYtq4irDe3GPPDuN825G0wF.jpg",
+      "description": "Con la identidad de Spider-Man ahora revelada, Peter Parker pide ayuda al Doctor Strange. Cuando un hechizo sale mal, comienzan a aparecer peligrosos enemigos de otros mundos."
+    },
+    {
+      "id": "26",
+      "title": "Dune",
+      "genre": "Ciencia Ficción",
+      "year": 2025,
+      "price": 52000,
+      "image": "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+      "description": "Adaptación cinematográfica de la novela de ciencia ficción de Frank Herbert, sobre el hijo de una familia noble a quien se le confía la protección del activo más valioso y el elemento más vital de la galaxia."
     }
   ]
 }
