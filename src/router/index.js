@@ -1,21 +1,40 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardLayout from '../layouts/DashboardLayout.vue'
-import ProductoView from '../views/ProductoView.vue'
-import LoginView from '../views/LoginView.vue'
+import DashboardProductoView from '@/views/DashboardProductoView.vue'
 
 const routes = [
-  { path: '/', redirect: '/productos' },
-  { path: '/login', name: 'login', component: LoginView },
+  {
+    path: '/',
+    redirect: '/login'
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/LoginView.vue')
+  },
+  {
+    path: '/productos',
+    name: 'ProductosPublico',
+    component: () => import('@/views/ProductoView.vue')
+  },
   {
     path: '/dashboard',
-    component: DashboardLayout,
-    meta: { requiresAuth: true, role: 'admin' },
-    redirect: '/dashboard/productos',
+    component: () => import('@/layouts/DashboardLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
-      { path: 'productos', name: 'dashboard-productos', component: ProductoView }
+      {
+        path: '',
+        redirect: '/dashboard/productos'
+      },
+      {
+        path: 'productos', // -> /dashboard/productos
+        name: 'DashboardProductos',
+        component: DashboardProductoView,
+        meta: {
+          requiresAdmin: true
+        }
+      },
     ]
   },
-  { path: '/productos', name: 'public-productos', component: ProductoView } // Accesible sin autenticación
 ]
 
 const router = createRouter({
@@ -26,24 +45,28 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
   const userRole = localStorage.getItem('userRole')
-
-  if (to.meta.requiresAuth) {
-    if (isAuthenticated) {
-      if (to.meta.role && to.meta.role !== userRole) {
-        // Si el rol no es el correcto, redirigir
-        next({ name: 'public-productos' }) // o a una página de "no autorizado"
-      } else {
-        // Si está autenticado y tiene el rol correcto (o no se requiere rol)
-        next()
-      }
-    } else {
-      // Si no está autenticado, redirigir al login
-      next({ name: 'login' })
-    }
-  } else {
-    // Si la ruta no requiere autenticación
-    next()
+  
+  // Si la ruta requiere autenticación y no está autenticado
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    alert('⚠️ Debes iniciar sesión para acceder')
+    next('/login')
+    return
   }
+
+  // Si la ruta requiere ser admin y no lo es
+  if (to.meta.requiresAdmin && userRole !== 'admin' && isAuthenticated) {
+    alert('🚫 No tienes permisos para acceder a esta página')
+    next('/productos') // Redirigir a la vista pública si no es admin
+    return
+  }
+
+  // Si está autenticado e intenta ir a login, redirigir
+  if (to.path === '/login' && isAuthenticated) {
+    next('/dashboard')
+    return
+  }
+
+  next()
 })
 
 export default router

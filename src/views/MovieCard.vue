@@ -1,4 +1,4 @@
-<!-- src/components/ProductCardComponent.vue -->
+<!-- src/components/MovieCard.vue -->
 <template>
   <div class="card h-100 shadow-sm movie-card">
     <img :src="movie.image || 'https://via.placeholder.com/400x600?text=Sin+Póster'" class="card-img-top" :alt="movie.title">
@@ -11,16 +11,9 @@
       <p class="card-text fw-bold fs-5 text-success mb-3">
         ${{ movie.price?.toLocaleString('es-CO') || 'N/A' }}
       </p>
-    </div>
-    <div v-if="isAdmin" class="card-footer">
-      <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-primary w-100" @click="$emit('edit', movie)">
-          <i class="bi bi-pencil-fill me-1"></i> Editar
-        </button>
-        <button class="btn btn-sm btn-outline-danger w-100" @click="$emit('delete', movie.id)">
-          <i class="bi bi-trash-fill me-1"></i> Eliminar
-        </button>
-      </div>
+      <button class="btn btn-outline-light mt-auto" @click="$emit('view-movie', movie)">
+        <i class="bi bi-eye me-1"></i> Ver Detalles
+      </button>
     </div>
   </div>
 </template>
@@ -32,20 +25,18 @@ defineProps({
     type: Object,
     required: true
   },
-  isAdmin: {
-    type: Boolean,
-    default: false
-  }
 })
 
 // eslint-disable-next-line no-undef
-defineEmits(['edit', 'delete'])
+defineEmits(['view-movie'])
 </script>
 
 <style scoped>
 .movie-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
+  background-color: #212529; /* Fondo oscuro */
+  color: white;
 }
 
 .movie-card:hover {
@@ -56,5 +47,9 @@ defineEmits(['edit', 'delete'])
 .card-img-top {
   height: 300px;
   object-fit: cover;
+}
+
+.text-success {
+  color: #a6e22e !important; /* Verde lima para el precio */
 }
 </style>

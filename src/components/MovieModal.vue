@@ -1,193 +1,168 @@
+<!-- src/components/MovieModal.vue -->
+<script setup>
+import { ref, watch, computed } from 'vue'
+
+// eslint-disable-next-line no-undef
+const props = defineProps({
+  show: Boolean,
+  movie: Object,
+  genres: Array,
+})
+
+// eslint-disable-next-line no-undef
+const emit = defineEmits(['close', 'saved'])
+
+const initialFormState = {
+  title: '',
+  genre: '',
+  year: new Date().getFullYear(),
+  price: null,
+  image: '',
+  description: '',
+}
+
+const formData = ref({ ...initialFormState })
+const errors = ref({})
+
+// --- VALIDACIÓN ---
+
+const validateForm = () => {
+  errors.value = {}
+
+  if (!formData.value.title || formData.value.title.trim().length < 3) {
+    errors.value.title = 'El título debe tener al menos 3 caracteres'
+  }
+  if (!formData.value.genre) {
+    errors.value.genre = 'Debes seleccionar un género.'
+  }
+  const currentYear = new Date().getFullYear()
+  if (!formData.value.year || formData.value.year < 1900 || formData.value.year > currentYear + 1) {
+    errors.value.year = `El año debe ser válido (entre 1900 y ${currentYear + 1}).`
+  }
+  if (formData.value.price === null || formData.value.price < 0) {
+    errors.value.price = 'El precio debe ser 0 o mayor.'
+  }
+  if (formData.value.image && !isValidURL(formData.value.image)) {
+    errors.value.image = 'Debe ser una URL válida (http:// o https://).'
+  }
+
+  return Object.keys(errors.value).length === 0
+}
+
+const isValidURL = (string) => {
+  try {
+    new URL(string)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// --- MANEJO DEL FORMULARIO ---
+
+const handleSubmit = () => {
+  if (!validateForm()) {
+    // No se necesita alert, los errores se muestran en el form
+    return
+  }
+  emit('saved', { ...formData.value })
+}
+
+const resetForm = () => {
+  formData.value = { ...initialFormState }
+  errors.value = {}
+}
+
+// Watcher para cargar datos al editar o resetear al cerrar
+watch(() => props.show, (newVal) => {
+  if (newVal && props.movie) {
+    // Modo edición: Cargar datos de la película
+    formData.value = { ...props.movie }
+  } else if (!newVal) {
+    // Al cerrar: Resetear formulario y errores
+    resetForm()
+  }
+})
+
+const descriptionCharCount = computed(() => formData.value.description?.length || 0)
+</script>
+
 <template>
-  <div v-if="show" class="modal-backdrop" @click.self="close">
-    <div class="modal-dialog" role="document" style="max-width:600px;margin:40px auto">
-      <div class="modal-content p-3">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="mb-0">{{ form.id ? 'Editar película' : 'Nueva película' }}</h5>
-          <button type="button" class="btn-close" @click="close" aria-label="Cerrar"></button>
+  <div v-if="show" class="modal-backdrop fade show"></div>
+  <div v-if="show" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ movie ? '✏️ Editar Película' : '➕ Nueva Película' }}</h5>
+          <button type="button" class="btn-close" @click="emit('close')"></button>
         </div>
 
-        <div class="mb-2">
-          <label class="form-label">Título *</label>
-          <input v-model="form.title" class="form-control" placeholder="Título" required/>
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Género *</label>
-          <select v-model="form.genre" class="form-control" required>
-            <option disabled value="">Seleccione un género</option>
-            <option v-for="g in genres" :key="g" :value="g">{{ g }}</option>
-          </select>
-        </div>
-        <div class="row g-2 mb-2">
-          <div class="col">
-            <label class="form-label">Año *</label>
-            <input v-model.number="form.year" type="number" class="form-control" placeholder="Año" min="1900" :max="new Date().getFullYear() + 1" required/>
-          </div>
-          <div class="col">
-            <label class="form-label">Precio venta *</label>
-            <input v-model.number="form.salePrice" type="number" step="0.01" class="form-control" placeholder="Precio venta" min="0" required/>
-          </div>
-        </div>
-        <div class="row g-2 mb-2">
-          <div class="col">
-            <label class="form-label">Precio alquiler *</label>
-            <input v-model.number="form.rentPrice" type="number" step="0.01" class="form-control" placeholder="Precio alquiler" min="0" required/>
-          </div>
-          <div class="col">
-            <label class="form-label">Existencia *</label>
-            <input v-model.number="form.stock" type="number" class="form-control" placeholder="Existencia" min="0" required/>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">URL del poster</label>
-          <input v-model="form.poster" class="form-control" placeholder="URL poster"/>
-          <small class="form-text text-muted">Opcional: URL de la imagen del poster</small>
+        <div class="modal-body">
+          <form @submit.prevent="handleSubmit">
+            <!-- Título -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Título <span class="text-danger">*</span></label>
+              <input v-model="formData.title" type="text" class="form-control" :class="{ 'is-invalid': errors.title }" placeholder="Ej: El Padrino" maxlength="100">
+              <div v-if="errors.title" class="invalid-feedback">{{ errors.title }}</div>
+            </div>
+
+            <div class="row">
+              <!-- Género -->
+              <div class="col-md-7 mb-3">
+                <label class="form-label fw-bold">Género <span class="text-danger">*</span></label>
+                <select v-model="formData.genre" class="form-select" :class="{ 'is-invalid': errors.genre }">
+                  <option disabled value="">-- Selecciona un género --</option>
+                  <option v-for="g in genres" :key="g" :value="g">{{ g }}</option>
+                </select>
+                <div v-if="errors.genre" class="invalid-feedback">{{ errors.genre }}</div>
+              </div>
+              <!-- Año -->
+              <div class="col-md-5 mb-3">
+                <label class="form-label fw-bold">Año <span class="text-danger">*</span></label>
+                <input v-model.number="formData.year" type="number" class="form-control" :class="{ 'is-invalid': errors.year }" placeholder="2024" min="1900" :max="new Date().getFullYear() + 1">
+                <div v-if="errors.year" class="invalid-feedback">{{ errors.year }}</div>
+              </div>
+            </div>
+
+            <!-- Precio -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Precio (COP) <span class="text-danger">*</span></label>
+              <div class="input-group" :class="{ 'is-invalid': errors.price }">
+                <span class="input-group-text">$</span>
+                <input v-model.number="formData.price" type="number" class="form-control" :class="{ 'is-invalid': errors.price }" placeholder="15000" step="100" min="0">
+              </div>
+              <div v-if="errors.price" class="invalid-feedback">{{ errors.price }}</div>
+            </div>
+
+            <!-- URL Imagen -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">URL de Imagen</label>
+              <input v-model="formData.image" type="text" class="form-control" :class="{ 'is-invalid': errors.image }" placeholder="https://ejemplo.com/imagen.jpg">
+              <div v-if="errors.image" class="invalid-feedback">{{ errors.image }}</div>
+              <small class="form-text text-muted">Opcional. Se usará una imagen por defecto si se deja vacío.</small>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Descripción</label>
+              <textarea v-model="formData.description" class="form-control" rows="3" placeholder="Descripción breve de la película..." maxlength="500"></textarea>
+              <small class="form-text text-muted text-end d-block">{{ descriptionCharCount }} / 500</small>
+            </div>
+          </form>
         </div>
 
-        <div class="d-flex justify-content-end gap-2">
-          <button class="btn btn-secondary" @click="close">Cancelar</button>
-          <button class="btn btn-primary" @click="save">Guardar</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="emit('close')">Cancelar</button>
+          <button type="button" class="btn btn-primary" @click="handleSubmit">{{ movie ? '💾 Actualizar' : '➕ Crear' }}</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { reactive, watch } from 'vue'
-import { createMovie, updateMovie } from '../service/api'
-
-export default {
-  name: 'MovieModal',
-  props: {
-    movie: { type: Object, default: null },
-    genres: { type: Array, default: () => ['Acción', 'Comedia', 'Drama', 'Ciencia Ficción', 'Terror', 'Suspenso', 'Animación'] },
-    show: { type: Boolean, default: false }
-  },
-  emits: ['close', 'saved'],
-  setup(props, { emit }) {
-    const form = reactive({
-      id: props.movie?.id ?? null,
-      title: props.movie?.title ?? '',
-      genre: props.movie?.genre ?? '',
-      year: props.movie?.year ?? new Date().getFullYear(),
-      salePrice: props.movie?.salePrice ?? 0,
-      rentPrice: props.movie?.rentPrice ?? 0,
-      stock: props.movie?.stock ?? 0,
-      poster: props.movie?.poster ?? ''
-    })
-
-    // Actualizar el form cuando cambia la prop movie
-    watch(() => props.movie, (newMovie) => {
-      if (newMovie) {
-        form.id = newMovie.id ?? null
-        form.title = newMovie.title ?? ''
-        form.genre = newMovie.genre ?? ''
-        form.year = newMovie.year ?? new Date().getFullYear()
-        form.salePrice = newMovie.salePrice ?? 0
-        form.rentPrice = newMovie.rentPrice ?? 0
-        form.stock = newMovie.stock ?? 0
-        form.poster = newMovie.poster ?? ''
-      } else {
-        // Resetear el form si no hay movie
-        form.id = null
-        form.title = ''
-        form.genre = ''
-        form.year = new Date().getFullYear()
-        form.salePrice = 0
-        form.rentPrice = 0
-        form.stock = 0
-        form.poster = ''
-      }
-    }, { immediate: true })
-
-    const save = async () => {
-      // Validación básica
-      if (!form.title || !form.title.trim()) {
-        alert('Por favor ingrese un título')
-        return
-      }
-      if (!form.genre) {
-        alert('Por favor seleccione un género')
-        return
-      }
-      if (!form.year || form.year < 1900 || form.year > new Date().getFullYear() + 1) {
-        alert('Por favor ingrese un año válido')
-        return
-      }
-      if (form.salePrice < 0 || form.rentPrice < 0) {
-        alert('Los precios no pueden ser negativos')
-        return
-      }
-      if (form.stock < 0) {
-        alert('La existencia no puede ser negativa')
-        return
-      }
-
-      try {
-        let res
-        // Preparar datos sin el id para crear
-        const movieData = {
-          title: form.title.trim(),
-          genre: form.genre,
-          year: parseInt(form.year),
-          salePrice: parseFloat(form.salePrice) || 0,
-          rentPrice: parseFloat(form.rentPrice) || 0,
-          stock: parseInt(form.stock) || 0,
-          poster: form.poster.trim() || ''
-        }
-
-        if (form.id) {
-          res = await updateMovie(form.id, movieData)
-        } else {
-          res = await createMovie(movieData)
-        }
-        
-        // Emitir el evento con los datos guardados
-        emit('saved', res.data)
-      } catch (e) {
-        console.error('Error al guardar:', e)
-        const errorMessage = e.response?.data?.message || e.response?.data || e.message || 'Error desconocido'
-        alert(`Error al guardar: ${errorMessage}`)
-      }
-    }
-
-    const close = () => {
-      emit('close')
-    }
-
-    return { 
-      form,
-      save, 
-      close
-    }
-  }
-}
-</script>
-
 <style scoped>
-.modal-backdrop { 
-  position: fixed; 
-  inset: 0; 
-  background: rgba(0,0,0,0.5); 
-  z-index: 2000; 
-  display: flex; 
-  align-items: flex-start; 
-  justify-content: center;
-  padding-top: 40px;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.form-label {
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-  font-size: 0.875rem;
+/* Corrige el problema de Bootstrap donde el input-group no muestra el borde de error */
+.input-group.is-invalid .form-control {
+  border-color: #dc3545;
 }
 </style>

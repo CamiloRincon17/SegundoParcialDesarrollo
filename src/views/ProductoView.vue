@@ -1,247 +1,146 @@
-<template>
-  <div class="container-fluid p-4">
-    <!-- Carrusel de películas destacadas -->
-    <div v-if="featuredMovies.length > 0" class="mb-5">
-      <h3 class="mb-3">Películas Destacadas</h3>
-      <div id="carouselMovies" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-          <button
-            v-for="(movie, index) in featuredMovies"
-            :key="movie.id"
-            type="button"
-            :data-bs-target="'#carouselMovies'"
-            :data-bs-slide-to="index"
-            :class="{ active: index === 0 }"
-            :aria-label="'Slide ' + (index + 1)"
-          ></button>
-        </div>
-        <div class="carousel-inner">
-          <div
-            v-for="(movie, index) in featuredMovies"
-            :key="movie.id"
-            :class="['carousel-item', { active: index === 0 }]"
-          >
-            <div class="carousel-content">
-              <img
-                :src="movie.poster || 'https://via.placeholder.com/800x400'"
-                class="d-block w-100 carousel-image"
-                :alt="movie.title"
-              />
-              <div class="carousel-caption d-none d-md-block">
-                <h5>{{ movie.title }}</h5>
-                <p>{{ movie.genre }} • {{ movie.year }}</p>
-                <p class="price-info">
-                  Venta: ${{ movie.salePrice?.toFixed(2) || '0.00' }} | 
-                  Alquiler: ${{ movie.rentPrice?.toFixed(2) || '0.00' }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselMovies" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Anterior</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselMovies" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Siguiente</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Catálogo de Películas</h2>
-      <button v-if="userRole === 'admin'" class="btn btn-danger" @click="openModal()">+ Añadir película</button>
-    </div>
-
-    <div v-if="loading" class="text-center my-4">
-      <div class="spinner-border text-primary" role="status"></div>
-    </div>
-    
-    <div v-else>
-      <!-- Vista de administrador -->
-      <table v-if="userRole === 'admin'" class="table table-hover">
-        <thead>
-          <tr>
-            <th>Poster</th>
-            <th>Título</th>
-            <th>Género</th>
-            <th>Año</th>
-            <th>Venta</th>
-            <th>Alquiler</th>
-            <th>Existencia</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="m in movies" :key="m.id">
-            <td><img :src="m.poster || 'https://via.placeholder.com/60x80'" alt="" style="width:60px;height:80px;object-fit:cover"/></td>
-            <td>{{ m.title }}</td>
-            <td>{{ m.genre }}</td>
-            <td>{{ m.year }}</td>
-            <td>${{ m.salePrice?.toFixed(2) || '0.00' }}</td>
-            <td>${{ m.rentPrice?.toFixed(2) || '0.00' }}</td>
-            <td>{{ m.stock ?? '-' }}</td>
-            <td>
-              <button class="btn btn-sm btn-primary me-1" @click="onEdit(m)">Editar</button>
-              <button class="btn btn-sm btn-success me-1" @click="onView(m)">Ver</button>
-              <button class="btn btn-sm btn-danger" @click="onDelete(m.id)">Borrar</button>
-            </td>
-          </tr>
-          <tr v-if="movies.length === 0">
-            <td colspan="8" class="text-center text-muted py-4">
-              No hay películas en el catálogo. Haga clic en "Añadir película" para comenzar.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Vista de usuario -->
-      <div v-else class="row row-cols-1 row-cols-md-4 g-4">
-        <div v-for="movie in movies" :key="movie.id" class="col">
-          <ProductCardComponent
-            :movie="movie"
-            :is-admin="userRole === 'admin'"
-            @view="onEdit"
-            @delete="onDelete"
-          />
-        </div>
-      </div>
-    </div>
-
-    <MovieModal
-      :show="showModal"
-      :movie="selected"
-      :genres="genres"
-      @close="closeModal"
-      @saved="onSaved"
-    />
-  </div>
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
-import MovieModal from '../components/MovieModal.vue'
-import ProductCardComponent from '../components/ProductCardComponent.vue'
-import { getMovies, deleteMovie } from '../service/api'
+import { ref, onMounted, computed } from 'vue'
+import { getMovies } from '@/service/api'
+import MovieCard from './MovieCard.vue' // Renombrado para consistencia
+import MovieDetailModal from './MovieDetailModal.vue' // Importar el modal correcto
+import MovieCarousel2025 from '@/components/MovieCarousel2025.vue'
 
+// Estados principales
 const movies = ref([])
 const loading = ref(false)
-const showModal = ref(false)
-const selected = ref(null)
-const userRole = ref(localStorage.getItem('userRole'))
-const genres = ref(['Acción', 'Comedia', 'Drama', 'Ciencia Ficción', 'Terror', 'Suspenso', 'Animación'])
+const error = ref(null)
 
-// Películas destacadas para el carrusel (primeras 5 películas)
-const featuredMovies = ref([])
+// Estados de búsqueda
+const searchQuery = ref('')
+const selectedGenre = ref('')
 
-const loadMovies = async () => {
+// ⭐ Computed: Filtrar películas
+const filteredMovies = computed(() => {
+  let result = movies.value
+
+  // Filtrar por búsqueda
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(
+      (m) =>
+        m.title?.toLowerCase().includes(query) ||
+        m.genre?.toLowerCase().includes(query) ||
+        m.description?.toLowerCase().includes(query)
+    )
+  }
+
+  // Filtrar por género
+  if (selectedGenre.value) {
+    result = result.filter((m) => m.genre === selectedGenre.value)
+  }
+
+  return result
+})
+
+// ⭐ Computed: Géneros únicos disponibles
+const availableGenres = computed(() => {
+  const genresSet = movies.value.map((m) => m.genre).filter(Boolean)
+  return [...new Set(genresSet)].sort()
+})
+
+// Estados para el modal de detalles
+const showDetailModal = ref(false)
+const selectedMovieForDetail = ref(null)
+const openDetailModal = (movie) => {
+  selectedMovieForDetail.value = movie
+  showDetailModal.value = true
+}
+
+
+// ⭐ Función: Cargar películas
+const fetchMovies = async () => {
   loading.value = true
+  error.value = null
+
   try {
-    const res = await getMovies()
-    movies.value = Array.isArray(res.data) ? res.data : []
-    // Seleccionar las primeras 5 películas para el carrusel
-    featuredMovies.value = movies.value.slice(0, 5)
-  } catch (e) {
-    console.error('Error al cargar películas:', e)
-    alert(`Error al cargar películas: ${e.message || 'Verifique que el servidor JSON esté corriendo en el puerto 3000'}`)
-    movies.value = []
-    featuredMovies.value = []
+    const response = await getMovies()
+    movies.value = response.data || []
+  } catch (err) {
+    error.value = 'No se pudieron cargar las películas. Verifica que JSON Server esté corriendo con "npm run api".'
   } finally {
     loading.value = false
   }
 }
 
-const openModal = () => {
-  selected.value = null
-  showModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-  selected.value = null
-}
-
-const onEdit = (movie) => {
-  selected.value = { ...movie }
-  showModal.value = true
-}
-
-const onView = (movie) => {
-  // comportamiento ver (puedes implementar un detalle modal separado)
-  selected.value = { ...movie }
-  showModal.value = true
-}
-
-const onDelete = async (id) => {
-  if (!confirm('¿Está seguro que desea eliminar esta película?')) return
-  try {
-    await deleteMovie(id)
-    // Recargar las películas desde el servidor
-    await loadMovies()
-  } catch (e) {
-    console.error('Error al eliminar:', e)
-    alert(`Error al eliminar: ${e.response?.data?.message || e.message || 'Error desconocido'}`)
-  }
-}
-
-const onSaved = async () => {
-  closeModal()
-  // Recargar las películas para asegurar que tenemos los datos actualizados del servidor
-  await loadMovies()
-}
-
-onMounted(loadMovies)
+// Cargar películas al montar el componente
+onMounted(fetchMovies)
 </script>
 
+<template>
+  <div class="container mt-4">
+    <!-- ============================================ -->
+    <!-- ESTADO: CARGANDO -->
+    <!-- ============================================ -->
+    <div v-if="loading" class="text-center my-5 py-5">
+      <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="text-muted">Cargando catálogo de películas...</p>
+    </div>
+    
+    <!-- ============================================ -->
+    <!-- ESTADO: ERROR -->
+    <!-- ============================================ -->
+    <div v-else-if="error" class="alert alert-danger d-flex align-items-center shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+      <div class="flex-grow-1">
+        <h5 class="alert-heading mb-1">Error al cargar películas</h5>
+        <p class="mb-0">{{ error }}</p>
+      </div>
+      <button @click="fetchMovies" class="btn btn-outline-danger">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Reintentar
+      </button>
+    </div>
+    
+    <div v-else>
+      <!-- Nuevo Carrusel de Próximos Estrenos -->
+      <MovieCarousel2025 @view-movie="openDetailModal" />
+
+      <h2 class="mb-4">Nuestro Catálogo</h2>
+
+      <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+      <div class="row mb-4 g-3">
+        <div class="col-md-8">
+          <input v-model="searchQuery" type="text" class="form-control" placeholder="🔍 Buscar por título o género...">
+        </div>
+        <div class="col-md-4">
+          <select v-model="selectedGenre" class="form-select">
+            <option value="">📁 Todos los géneros</option>
+            <option v-for="genre in availableGenres" :key="genre" :value="genre">{{ genre }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ESTADO: SIN RESULTADOS -->
+      <div v-if="filteredMovies.length === 0" class="alert alert-info text-center">
+        <i class="bi bi-search me-2"></i>
+        {{ searchQuery || selectedGenre ? 'No se encontraron películas con esos filtros.' : 'No hay películas registradas.' }}
+      </div>
+
+      <!-- GRID DE PELÍCULAS -->
+      <div v-else class="row g-4">
+        <div v-for="movie in filteredMovies" :key="movie.id" class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <MovieCard :movie="movie" @view-movie="openDetailModal" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- ============================================ -->
+    <!-- MODAL DE DETALLES -->
+    <!-- ============================================ -->
+    <MovieDetailModal
+      :show="showDetailModal"
+      :movie="selectedMovieForDetail"
+      @close="showDetailModal = false"
+    />
+  </div>
+</template>
+
 <style scoped>
-.carousel-content {
-  position: relative;
-  max-height: 500px;
-  overflow: hidden;
-}
-
-.carousel-image {
-  height: 500px;
-  object-fit: cover;
-  filter: brightness(0.7);
-}
-
-.carousel-caption {
-  background: rgba(0, 0, 0, 0.6);
-  padding: 20px;
-  border-radius: 10px;
-  bottom: 30px;
-}
-
-.carousel-caption h5 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.carousel-caption p {
-  font-size: 1.1rem;
-  margin-bottom: 5px;
-}
-
-.price-info {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #ffc107;
-}
-
-@media (max-width: 768px) {
-  .carousel-image {
-    height: 300px;
-  }
-  
-  .carousel-caption h5 {
-    font-size: 1.5rem;
-  }
-  
-  .carousel-caption p {
-    font-size: 0.9rem;
-  }
-}
 </style>
