@@ -1,14 +1,14 @@
-<!-- src/components/MovieCard.vue -->
+
 <template>
-  <div class="card h-100 shadow-sm movie-card">
+  <div class="card h-100 shadow-sm movie-card bg-dark">
     <img :src="movie.image || 'https://via.placeholder.com/400x600?text=Sin+Póster'" class="card-img-top" :alt="movie.title">
     <div class="card-body d-flex flex-column">
-      <h5 class="card-title flex-grow-1">{{ movie.title }}</h5>
+      <h5 class=" card-title flex-grow-1">{{ movie.title }}</h5>
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <span class="badge bg-primary">{{ movie.genre }}</span>
+        <span class="badge  btn-custom">{{ movie.genre }}</span>
         <span class="badge bg-secondary">{{ movie.year }}</span>
       </div>
-      <p class="card-text fw-bold fs-5 text-success mb-3">
+      <p class="card-text fw-bold fs-5 text-gradient mb-3">
         ${{ movie.price?.toLocaleString('es-CO') || 'N/A' }}
       </p>
       <button class="btn btn-outline-light mt-auto" @click="$emit('view-movie', movie)">
@@ -35,7 +35,7 @@ defineEmits(['view-movie'])
 .movie-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
-  background-color: #212529; /* Fondo oscuro */
+  background-color: #373f3d; /* Fondo oscuro */
   color: white;
 }
 

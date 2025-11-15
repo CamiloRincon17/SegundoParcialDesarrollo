@@ -1,4 +1,4 @@
-<!-- src/views/DashboardProductoView.vue -->
+ <!-- se ve en admin -->
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { getMovies, createMovie, updateMovie, deleteMovie } from '@/service/api'
@@ -10,6 +10,7 @@ const loading = ref(false)
 const error = ref(null)
 
 // Estados del modal
+
 const showModal = ref(false)
 const selectedMovie = ref(null)
 
@@ -132,7 +133,7 @@ onMounted(fetchMovies)
             </select>
           </div>
           <div class="col-md-5 text-end">
-            <button @click="openModalForCreate" class="btn btn-primary">
+            <button @click="openModalForCreate" class="btn btn-success">
               <i class="bi bi-plus-circle me-1"></i> Nueva Película
             </button>
           </div>
@@ -183,7 +184,7 @@ onMounted(fetchMovies)
             <td>${{ movie.price?.toLocaleString('es-CO') || '0' }}</td>
             <td>
               <div class="btn-group">
-                <button @click="openModalForEdit(movie)" class="btn btn-sm btn-outline-primary">
+                <button @click="openModalForEdit(movie)" class="btn btn-sm btn-success">
                   <i class="bi bi-pencil-fill"></i> Editar
                 </button>
                 <button @click="handleDelete(movie.id)" class="btn btn-sm btn-outline-danger">

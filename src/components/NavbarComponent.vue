@@ -1,8 +1,9 @@
+<!-- navbar y sus funcinalidades -->
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success ">
     <div class="container-fluid">
       <!-- se linkea el nombre como si fuera un boton para mandarte a la parte de productos -->
-      <router-link class="navbar-brand" to="/productos">Cinema plus</router-link>
+      <router-link class="navbar-brand" to="/productos">Film Galaxy</router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -10,6 +11,9 @@
         <ul class="navbar-nav ms-auto">
           <li v-if="isAuthenticated" class="nav-item">
             <span class="nav-link">{{ username }}</span>
+          </li>
+          <li v-if="isAuthenticated && userRole === 'admin'" class="nav-item">
+            <router-link class="nav-link" to="/productos">Página Principal</router-link>
           </li>
           <li v-if="isAuthenticated && userRole === 'admin'" class="nav-item">
             <router-link class="nav-link" to="/dashboard">Dashboard</router-link>

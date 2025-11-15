@@ -1,7 +1,7 @@
-<!-- src/components/MovieCarousel2025.vue -->
+<!-- funcionalidad carrusel -->
 <template>
-  <div class="movie-carousel-container mb-5">
-    <h3 class="text-white mb-4 text-center">Próximos Estrenos 2025</h3>
+  <div class="movie-carousel-container mb-5 bg-dark">
+
     <div v-if="loading" class="text-center text-white my-5">
       <div class="spinner-border text-light mb-3" role="status">
         <span class="visually-hidden">Cargando...</span>
@@ -33,10 +33,11 @@
       <div class="carousel-inner">
         <div v-for="(movie, index) in movies" :key="movie.id" class="carousel-item" :class="{ active: index === 0 }">
           <img :src="movie.poster || 'https://via.placeholder.com/800x400?text=Próximo+Estreno'" class="d-block w-100 carousel-img" :alt="movie.title" />
+
           <div class="carousel-caption d-none d-md-block">
-            <h5>{{ movie.title }}</h5>
+            <h5 class="">{{ movie.title }}</h5>
             <p>
-              <span class="badge bg-primary me-2">{{ movie.genre }}</span>
+              <span class="badge bg-success me-2">{{ movie.genre }}</span>
               <span class="badge bg-secondary">{{ movie.releaseDate || movie.year }}</span>
             </p>
             <button @click="handleViewMovie(movie)" class="btn btn-outline-light btn-sm mt-2">
@@ -98,12 +99,13 @@ onMounted(() => {
 
 <style scoped>
 .carousel-item {
-  height: 450px; /* Altura fija para el carrusel */
+  height: 500px; /* Altura fija para el carrusel */
 }
 
 .carousel-img {
   height: 100%;
-  object-fit: cover; /* Asegura que la imagen cubra el espacio sin deformarse */
+  width: 100%;
+  object-fit: cover;  /* Asegura que la imagen cubra el espacio sin deformarse */
   filter: brightness(0.6); /* Oscurece la imagen para que el texto resalte */
 }
 

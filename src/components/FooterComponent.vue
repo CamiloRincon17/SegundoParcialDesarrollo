@@ -1,7 +1,8 @@
+ <!-- footer funciona como footer -->
 <template>
-  <footer class="footer mt-auto py-3 bg-light">
+  <footer class="footer mt-auto py-3 bg-success">
     <div class="container text-center">
-      <span class="text-muted">© 2023 Cinema Admin. Todos los derechos reservados.</span>
+      <span class="texto ">© 2025 Film Galaxy. Todos los derechos reservados.</span>
     </div>
   </footer>
 </template>
@@ -11,3 +12,9 @@ export default {
   name: 'FooterComponent'
 }
 </script>
+<style scoped>
+.texto{
+  color: rgb(255, 255, 255);
+}
+</style>
+>

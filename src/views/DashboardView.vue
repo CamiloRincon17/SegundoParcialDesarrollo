@@ -9,7 +9,7 @@
           </div>
         </div>
       </div>
-
+   
       <!-- filtros -->
       <div class="row mb-3">
         <div class="col-12">
@@ -49,7 +49,7 @@
               </thead>
               <tbody>
                 <tr v-for="m in displayedMovies" :key="m.id">
-                  <td><img :src="m.poster" class="movie-poster" alt="" /></td>
+                  <td><img :src="m.image" class="movie-poster" alt="" /></td>
                   <td>{{ m.title }}</td>
                   <td>{{ m.genre }}</td>
                   <td>{{ m.year }}</td>

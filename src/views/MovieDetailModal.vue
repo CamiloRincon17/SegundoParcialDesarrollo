@@ -1,17 +1,16 @@
-<!-- src/components/MovieDetailModal.vue -->
 <template>
   <div v-if="show" class="modal-backdrop fade show"></div>
   <div v-if="show" class="modal fade show d-block" tabindex="-1" @click.self="close">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content bg-dark text-white shadow-lg">
-        <div class="modal-header border-secondary">
-          <h5 class="modal-title">{{ movie?.title }}</h5>
+        <div class="modal-header border-success">
+          <h5 class="modal-title ">{{ movie?.title }}</h5>
           <button type="button" class="btn-close btn-close-white" @click="close"></button>
         </div>
         <div class="modal-body" v-if="movie">
           <div class="row g-4">
             <div class="col-md-4">
-              <img :src="movie.poster || movie.image || 'https://via.placeholder.com/400x600?text=No+Image'" class="img-fluid rounded shadow" :alt="movie.title">
+              <img :src="movie.image || movie.image || 'https://via.placeholder.com/400x600?text=No+Image'" class="img-fluid rounded shadow" :alt="movie.title">
             </div>
             <div class="col-md-8 d-flex flex-column">
               <div>
@@ -19,7 +18,7 @@
                 <hr>
                 <p>
                   <strong>Género:</strong>
-                  <span class="badge bg-primary ms-2 fs-6">{{ movie.genre }}</span>
+                  <span class="badge bg-success ms-2 fs-66">{{ movie.genre }}</span>
                 </p>
                 <p>
                   <strong>Año de Estreno:</strong>
@@ -69,13 +68,13 @@ const close = () => {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .modal-title {
-  color: #66d9ef; /* Un color cian para el título */
+  color: #00ff99; /* Un color cian para el título */
 }
 .img-fluid {
   max-height: 500px;
   object-fit: cover;
 }
 .text-success {
-  color: #a6e22e !important; /* Verde lima para el precio */
+  color: #00ff2f !important; /* Verde lima para el precio */
 }
 </style>
