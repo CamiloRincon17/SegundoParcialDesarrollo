@@ -1,4 +1,4 @@
-// src/service/api.js
+//  libreria usada
 import axios from 'axios'
 
 // 1. Configuración base de Axios
@@ -7,7 +7,7 @@ const api = axios.create({
   timeout: 10000, // 10 segundos de timeout
 })
 
-// 2. Interceptor de respuestas para manejo global de errores
+//  Interceptor de respuestas para manejo global de errores
 api.interceptors.response.use(
   // Si la respuesta es exitosa (status 2xx), la devuelve sin cambios.
   (response) => response,
@@ -31,7 +31,7 @@ api.interceptors.response.use(
   }
 )
 
-// 3. Exportar funciones CRUD para interactuar con la API de películas
+// Exportar funciones CRUD para interactuar con la API de películas
 export const getMovies = () => api.get('/movies')
 export const getMovie = (id) => api.get(`/movies/${id}`)
 export const createMovie = (data) => api.post('/movies', data)

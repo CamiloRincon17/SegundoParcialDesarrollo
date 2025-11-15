@@ -1,4 +1,4 @@
-<!-- src/views/DashboardProductoView.vue -->
+ <!-- se ve en admin -->
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { getMovies, createMovie, updateMovie, deleteMovie } from '@/service/api'

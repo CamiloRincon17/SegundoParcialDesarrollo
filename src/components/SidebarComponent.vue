@@ -1,22 +1,12 @@
 <template>
   <div class="sidebar p-3">
     <div class="d-flex flex-column h-100">
-      <h3 class="mb-4">Cinema Admin</h3>
+      <h3 class="mb-4">Estas en Admin</h3>
       <nav class="nav flex-column">
-        <router-link 
-          class="nav-link text-white" 
-          :class="{ active: $route.path === '/dashboard' }"
-          to="/dashboard"
-        >
-          Dashboard
-        </router-link>
-        <router-link 
-          class="nav-link text-white" 
-          :class="{ active: $route.path.includes('/productos') }"
-          to="/dashboard/productos"
-        >
-          Películas
-        </router-link>
+        <router-link class="sidebar-link" to="/dashboard">Dashboard</router-link>
+
+        <router-link class="sidebar-link" to="/productos">Página Principal</router-link>
+
       </nav>
       <div class="mt-auto">
         <button class="btn btn-outline-light w-100" @click="logout">
@@ -39,10 +29,27 @@ const logout = () => {
 
 <style scoped>
 .nav-link.active {
-  background-color: rgba(255,255,255,0.1);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-link:hover {
-  background-color: rgba(255,255,255,0.05);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.sidebar-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.router-link-exact-active {
+  background-color: #0d6efd;
+  color: #fff;
+  font-weight: 500;
 }
 </style>

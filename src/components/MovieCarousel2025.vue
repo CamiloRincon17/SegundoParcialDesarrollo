@@ -1,4 +1,4 @@
-<!-- src/components/MovieCarousel2025.vue -->
+<!-- funcionalidad carrusel -->
 <template>
   <div class="movie-carousel-container mb-5">
     <h3 class="text-white mb-4 text-center">Próximos Estrenos 2025</h3>

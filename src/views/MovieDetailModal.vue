@@ -1,4 +1,3 @@
-<!-- src/components/MovieDetailModal.vue -->
 <template>
   <div v-if="show" class="modal-backdrop fade show"></div>
   <div v-if="show" class="modal fade show d-block" tabindex="-1" @click.self="close">

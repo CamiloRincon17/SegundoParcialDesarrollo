@@ -1,4 +1,4 @@
-<!-- src/components/MovieModal.vue -->
+<!-- aqui se muesta lo de editar la pelicual -->
 <script setup>
 import { ref, watch, computed } from 'vue'
 
@@ -86,7 +86,7 @@ watch(() => props.show, (newVal) => {
 
 const descriptionCharCount = computed(() => formData.value.description?.length || 0)
 </script>
-
+  <!-- funcionalidad de editar peliculas y agregar -->
 <template>
   <div v-if="show" class="modal-backdrop fade show"></div>
   <div v-if="show" class="modal fade show d-block" tabindex="-1">
@@ -138,7 +138,7 @@ const descriptionCharCount = computed(() => formData.value.description?.length |
               <div v-if="errors.price" class="invalid-feedback">{{ errors.price }}</div>
             </div>
 
-            <!-- URL Imagen -->
+            <!-- URL poster -->
             <div class="mb-3">
               <label class="form-label fw-bold">URL de carrusel </label>
               <input v-model="formData.poster" type="text" class="form-control" :class="{ 'is-invalid': errors.poster }"
@@ -146,6 +146,7 @@ const descriptionCharCount = computed(() => formData.value.description?.length |
               <div v-if="errors.poster" class="invalid-feedback">{{ errors.poster }}</div>
               <small class="form-text text-muted">Opcional. Se usará una imagen por defecto si se deja vacío.</small>
             </div>
+            <!-- URL image -->
             <div class="mb-3">
               <label class="form-label fw-bold">URL de Imagen</label>
               <input v-model="formData.image" type="text" class="form-control" :class="{ 'is-invalid': errors.image }"
