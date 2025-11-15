@@ -1,4 +1,4 @@
-<!-- src/components/MovieCard.vue -->
+
 <template>
   <div class="card h-100 shadow-sm movie-card">
     <img :src="movie.image || 'https://via.placeholder.com/400x600?text=Sin+Póster'" class="card-img-top" :alt="movie.title">
