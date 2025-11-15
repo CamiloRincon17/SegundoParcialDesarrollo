@@ -32,7 +32,8 @@
       <!-- Contenido del Carrusel -->
       <div class="carousel-inner">
         <div v-for="(movie, index) in movies" :key="movie.id" class="carousel-item" :class="{ active: index === 0 }">
-          <img :src="movie.poster || 'https://via.placeholder.com/800x400?text=Próximo+Estreno'" class="d-block w-100 carousel-img" :alt="movie.title" />
+          <img :src="movie.image || 'https://via.placeholder.com/800x400?text=Próximo+Estreno'" class="d-block w-100 carousel-img" :alt="movie.title" />
+
           <div class="carousel-caption d-none d-md-block">
             <h5>{{ movie.title }}</h5>
             <p>
@@ -98,12 +99,13 @@ onMounted(() => {
 
 <style scoped>
 .carousel-item {
-  height: 450px; /* Altura fija para el carrusel */
+  height: 500px; /* Altura fija para el carrusel */
 }
 
 .carousel-img {
   height: 100%;
-  object-fit: cover; /* Asegura que la imagen cubra el espacio sin deformarse */
+  width: 100%;
+  object-fit: cover;  /* Asegura que la imagen cubra el espacio sin deformarse */
   filter: brightness(0.6); /* Oscurece la imagen para que el texto resalte */
 }
 
