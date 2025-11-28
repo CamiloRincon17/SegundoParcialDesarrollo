@@ -3,7 +3,7 @@ import axios from 'axios'
 
 // 1. Configuración base de Axios
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://6929a1e39d311cddf34aa637.mockapi.io/api/v1',
   timeout: 10000, // 10 segundos de timeout
 })
 
@@ -31,9 +31,27 @@ api.interceptors.response.use(
   }
 )
 
-// Exportar funciones CRUD para interactuar con la API de películas
-export const getMovies = () => api.get('/movies')
-export const getMovie = (id) => api.get(`/movies/${id}`)
-export const createMovie = (data) => api.post('/movies', data)
-export const updateMovie = (id, data) => api.put(`/movies/${id}`, data)
-export const deleteMovie = (id) => api.delete(`/movies/${id}`)
+// Exportar funciones CRUD para interactuar con la API de películas (recurso: productos)
+export const getMovies = () => api.get('/productos')
+export const getMovie = (id) => api.get(`/productos/${id}`)
+export const createMovie = (data) => api.post('/productos', data)
+export const updateMovie = (id, data) => api.put(`/productos/${id}`, data)
+export const deleteMovie = (id) => api.delete(`/productos/${id}`)
+
+// Funciones de autenticación (recurso: users)
+export const getUsers = () => api.get('/users')
+export const getUserByEmail = (email) => api.get(`/users?username=${email}`)
+export const loginUser = async (email, password) => {
+  try {
+    const response = await api.get(`/users?username=${email}`)
+    const users = response.data
+    const user = users.find(u => u.username === email && u.password === password)
+    return user || null
+  } catch (error) {
+    console.error('Error en loginUser:', error)
+    throw error
+  }
+}
+export const registerUser = (data) => api.post('/users', data)
+export const updateUser = (id, data) => api.put(`/users/${id}`, data)
+export const deleteUser = (id) => api.delete(`/users/${id}`)

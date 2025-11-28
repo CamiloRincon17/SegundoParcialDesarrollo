@@ -35,6 +35,12 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/users',
+    name: 'UserManagement',
+    component: () => import('@/views/UserManagementView.vue'),
+    meta: { requiresAuth: true, requiresSuperAdmin: true }
+  },
 ]
 
 const router = createRouter({
@@ -45,7 +51,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
   const userRole = localStorage.getItem('userRole')
-  
+
   // Si la ruta requiere autenticación y no está autenticado
   if (to.meta.requiresAuth && !isAuthenticated) {
     alert('⚠️ Debes iniciar sesión para acceder')
@@ -53,10 +59,17 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  // Si la ruta requiere ser admin y no lo es
-  if (to.meta.requiresAdmin && userRole !== 'admin' && isAuthenticated) {
+  // Si la ruta requiere ser admin y no lo es (admin o superadmin)
+  if (to.meta.requiresAdmin && userRole !== 'admin' && userRole !== 'superadmin' && isAuthenticated) {
     alert('🚫 No tienes permisos para acceder a esta página')
-    next('/productos') // Redirigir a la vista pública si no es admin
+    next('/productos') // Redirigir a la vista pública si no es admin/superadmin
+    return
+  }
+
+  // Si la ruta requiere ser superadmin y no lo es
+  if (to.meta.requiresSuperAdmin && userRole !== 'superadmin' && isAuthenticated) {
+    alert('🚫 Solo los Super Administradores pueden acceder a esta sección')
+    next('/dashboard') // Redirigir al dashboard si no es superadmin
     return
   }
 

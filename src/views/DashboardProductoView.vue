@@ -1,4 +1,4 @@
- <!-- se ve en admin -->
+<!-- se ve en admin -->
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { getMovies, createMovie, updateMovie, deleteMovie } from '@/service/api'
@@ -10,13 +10,15 @@ const loading = ref(false)
 const error = ref(null)
 
 // Estados del modal
-
 const showModal = ref(false)
 const selectedMovie = ref(null)
 
 // Estados de búsqueda y filtro
 const searchQuery = ref('')
 const selectedGenre = ref('')
+
+// Rol del usuario actual
+const userRole = ref(localStorage.getItem('userRole'))
 
 // Géneros para el modal
 const genresForModal = ['Acción', 'Comedia', 'Drama', 'Terror', 'Ciencia Ficción', 'Romance', 'Thriller']
@@ -133,6 +135,13 @@ onMounted(fetchMovies)
             </select>
           </div>
           <div class="col-md-5 text-end">
+            <router-link 
+              v-if="userRole === 'superadmin'" 
+              to="/users" 
+              class="btn btn-warning me-2"
+            >
+              👥 Gestión de Usuarios
+            </router-link>
             <button @click="openModalForCreate" class="btn btn-success">
               <i class="bi bi-plus-circle me-1"></i> Nueva Película
             </button>

@@ -86,8 +86,89 @@
 
           <!-- Enlace para crear una nueva cuenta -->
           <p class="text-center text-white">
-            ¿No tienes cuenta? <a href="#" class="text-success">Crear cuenta</a>
+            ¿No tienes cuenta? <a href="#" @click.prevent="showRegisterModal = true" class="text-success">Crear cuenta</a>
           </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div v-if="showRegisterModal" class="modal-overlay" @click.self="showRegisterModal = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="text-white">Crear Nueva Cuenta</h3>
+          <button @click="showRegisterModal = false" class="btn-close" aria-label="Close">×</button>
+        </div>
+
+        <div v-if="registerAlert.message" :class="`alert alert-${registerAlert.type}`" role="alert">
+          {{ registerAlert.message }}
+        </div>
+
+        <form @submit.prevent="handleRegister">
+          <div class="mb-3">
+            <label for="registerName" class="form-label text-white">Nombre completo</label>
+            <input
+              v-model="registerForm.name"
+              type="text"
+              class="form-control bg-dark text-white border-0"
+              id="registerName"
+              placeholder="Tu nombre"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="registerEmail" class="form-label text-white">Correo electrónico</label>
+            <input
+              v-model="registerForm.email"
+              type="email"
+              class="form-control bg-dark text-white border-0"
+              id="registerEmail"
+              placeholder="correo@ejemplo.com"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="registerPassword" class="form-label text-white">Contraseña</label>
+            <input
+              v-model="registerForm.password"
+              type="password"
+              class="form-control bg-dark text-white border-0"
+              id="registerPassword"
+              placeholder="Mínimo 6 caracteres"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="registerPasswordConfirm" class="form-label text-white">Confirmar contraseña</label>
+            <input
+              v-model="registerForm.passwordConfirm"
+              type="password"
+              class="form-control bg-dark text-white border-0"
+              id="registerPasswordConfirm"
+              placeholder="Repite tu contraseña"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="accessCode" class="form-label text-white">
+              Código de acceso <span class="text-muted">(opcional)</span>
+            </label>
+            <input
+              v-model="registerForm.accessCode"
+              type="text"
+              class="form-control bg-dark text-white border-0"
+              id="accessCode"
+              placeholder="ADMIN2025 o SUPER2025"
+            />
+            <small class="text-muted">Dejar vacío para cuenta regular</small>
+          </div>
+
+          <button type="submit" class="btn btn-custom w-100 mb-2">CREAR CUENTA</button>
+          <button type="button" @click="showRegisterModal = false" class="btn btn-secondary w-100">CANCELAR</button>
         </form>
       </div>
     </div>
@@ -95,8 +176,8 @@
 </template>
 
 <script>
-// Importa los datos de usuarios desde un archivo JSON local.
-import usuarios from '../data/usuarios.json'
+// Importa las funciones de autenticación desde el servicio API
+import { loginUser, registerUser } from '../service/api'
 
 export default {
   name: "LoginView",
@@ -106,7 +187,16 @@ export default {
       email: "", // Almacena el correo electrónico ingresado por el usuario.
       password: "", // Almacena la contraseña ingresada por el usuario.
       showPassword: false, // Controla si la contraseña se muestra o no.
-      alert: { message: '', type: 'danger' } // Objeto para gestionar los mensajes de alerta.
+      alert: { message: '', type: 'danger' }, // Objeto para gestionar los mensajes de alerta.
+      showRegisterModal: false, // Controla la visibilidad del modal de registro
+      registerForm: { // Datos del formulario de registro
+        name: '',
+        email: '',
+        password: '',
+        passwordConfirm: '',
+        accessCode: '' // Código para asignar rol admin o superadmin
+      },
+      registerAlert: { message: '', type: 'danger' } // Alertas del modal de registro
     };
   },
   // `methods` contiene las funciones que se pueden llamar desde el template.
@@ -115,8 +205,8 @@ export default {
     togglePassword() {
       this.showPassword = !this.showPassword;
     },
-    // Gestiona el proceso de inicio de sesión.
-    handleLogin() {
+    // Gestiona el proceso de inicio de sesión usando MockAPI.
+    async handleLogin() {
       // Validación básica para asegurar que los campos no estén vacíos.
       if (!this.email || !this.password) {
         this.alert = { message: 'Por favor ingresa correo y contraseña', type: 'warning' }
@@ -133,25 +223,107 @@ export default {
         return
       }
 
-      // Busca al usuario en el archivo JSON. Compara el correo y la contraseña.
-      const user = usuarios.find(u => u.username.toLowerCase() === this.email.toLowerCase() && u.password === this.password)
+      try {
+        // Llama a la API para validar las credenciales del usuario.
+        const user = await loginUser(this.email, this.password)
 
-      if (user) {
-        // Si el usuario es válido, se guarda la información de sesión en `localStorage`.
-        localStorage.setItem('isAuthenticated', 'true')
-        localStorage.setItem('userRole', user.role || 'user')
-        localStorage.setItem('username', user.username)
+        if (user) {
+          // Si el usuario es válido, se guarda la información de sesión en `localStorage`.
+          localStorage.setItem('isAuthenticated', 'true')
+          localStorage.setItem('userRole', user.role || 'user')
+          localStorage.setItem('username', user.username)
 
-        // Redirige al usuario según su rol.
-        if (user.role === 'admin') {
-          this.$router.push('/dashboard')
+          // Redirige al usuario según su rol.
+          if (user.role === 'admin') {
+            this.$router.push('/dashboard')
+          } else {
+            this.$router.push('/productos')
+          }
         } else {
-          this.$router.push('/productos')
+          // Si las credenciales son inválidas, se muestra un mensaje de error.
+          this.alert = { message: 'Credenciales inválidas', type: 'danger' }
+          setTimeout(() => { this.alert = { message: '', type: 'danger' } }, 3000)
         }
-      } else {
-        // Si las credenciales son inválidas, se muestra un mensaje de error.
-        this.alert = { message: 'Credenciales inválidas', type: 'danger' }
+      } catch (error) {
+        // Si hay un error de conexión o del servidor, se muestra un mensaje.
+        console.error('Error en login:', error)
+        this.alert = { message: 'Error al conectar con el servidor. Verifica tu conexión.', type: 'danger' }
         setTimeout(() => { this.alert = { message: '', type: 'danger' } }, 3000)
+      }
+    },
+    // Gestiona el proceso de registro de nuevos usuarios.
+    async handleRegister() {
+      // Validación básica
+      if (!this.registerForm.name || !this.registerForm.email || !this.registerForm.password) {
+        this.registerAlert = { message: 'Por favor completa todos los campos', type: 'warning' }
+        setTimeout(() => { this.registerAlert = { message: '', type: 'danger' } }, 3000)
+        return
+      }
+
+      // Validación del formato del correo
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(this.registerForm.email)) {
+        this.registerAlert = { message: 'Por favor ingresa un correo electrónico válido', type: 'warning' }
+        setTimeout(() => { this.registerAlert = { message: '', type: 'danger' } }, 3000)
+        return
+      }
+
+      // Validación de longitud de contraseña
+      if (this.registerForm.password.length < 6) {
+        this.registerAlert = { message: 'La contraseña debe tener al menos 6 caracteres', type: 'warning' }
+        setTimeout(() => { this.registerAlert = { message: '', type: 'danger' } }, 3000)
+        return
+      }
+
+      // Validación de coincidencia de contraseñas
+      if (this.registerForm.password !== this.registerForm.passwordConfirm) {
+        this.registerAlert = { message: 'Las contraseñas no coinciden', type: 'warning' }
+        setTimeout(() => { this.registerAlert = { message: '', type: 'danger' } }, 3000)
+        return
+      }
+
+      try {
+        // Determinar el rol según el código de acceso
+        const ADMIN_CODE = "ADMIN2025"
+        const SUPERADMIN_CODE = "SUPER2025"
+        
+        let userRole = 'user' // Por defecto
+        if (this.registerForm.accessCode === SUPERADMIN_CODE) {
+          userRole = 'superadmin'
+        } else if (this.registerForm.accessCode === ADMIN_CODE) {
+          userRole = 'admin'
+        }
+
+        // Crear el nuevo usuario en la API
+        const newUser = {
+          username: this.registerForm.email,
+          password: this.registerForm.password,
+          name: this.registerForm.name,
+          role: userRole
+        }
+
+        await registerUser(newUser)
+
+        // Mostrar mensaje de éxito
+        this.registerAlert = { message: '¡Cuenta creada exitosamente! Redirigiendo...', type: 'success' }
+        
+        // Guardar sesión automáticamente
+        localStorage.setItem('isAuthenticated', 'true')
+        localStorage.setItem('userRole', userRole)
+        localStorage.setItem('username', newUser.username)
+
+        // Redirigir según el rol
+        setTimeout(() => {
+          if (userRole === 'admin' || userRole === 'superadmin') {
+            this.$router.push('/dashboard')
+          } else {
+            this.$router.push('/productos')
+          }
+        }, 2000)
+      } catch (error) {
+        console.error('Error en registro:', error)
+        this.registerAlert = { message: 'Error al crear la cuenta. Intenta de nuevo.', type: 'danger' }
+        setTimeout(() => { this.registerAlert = { message: '', type: 'danger' } }, 3000)
       }
     },
   },
@@ -250,4 +422,92 @@ export default {
     max-width: 100%;
   }
 }
+
+/* Estilos del modal de registro */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background-color: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 255, 144, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+.btn-close:hover {
+  color: #00ff90;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
 </style>
