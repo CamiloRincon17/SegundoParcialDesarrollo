@@ -2,16 +2,27 @@
   <div class="user-management-container">
     <div class="container-fluid py-4">
       <!-- Header -->
-      <div class="header-section mb-4">
-        <h1 class="text-white mb-2">👥 Gestión de Usuarios</h1>
-        <p class="text-muted">Administra roles y permisos de los usuarios del sistema</p>
+      <div class="header-section mb-4 d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="text-white mb-2">
+            <i class="bi bi-people-fill me-2"></i>
+            Gestión de Usuarios
+          </h1>
+          <p class="text-muted">Administra roles y permisos de los usuarios del sistema</p>
+        </div>
+        <button @click="openModalForCreate" class="btn btn-success btn-lg">
+          <i class="bi bi-plus-circle me-2"></i>
+          Crear Usuario
+        </button>
       </div>
 
       <!-- Estadísticas -->
       <div class="row mb-4">
         <div class="col-md-4 mb-3">
           <div class="stat-card stat-total">
-            <div class="stat-icon">👥</div>
+            <div class="stat-icon">
+              <i class="bi bi-people-fill"></i>
+            </div>
             <div class="stat-info">
               <h3>{{ totalUsers }}</h3>
               <p>Total Usuarios</p>
@@ -20,7 +31,9 @@
         </div>
         <div class="col-md-4 mb-3">
           <div class="stat-card stat-admin">
-            <div class="stat-icon">🔧</div>
+            <div class="stat-icon">
+              <i class="bi bi-gear-fill"></i>
+            </div>
             <div class="stat-info">
               <h3>{{ adminCount }}</h3>
               <p>Administradores</p>
@@ -29,7 +42,9 @@
         </div>
         <div class="col-md-4 mb-3">
           <div class="stat-card stat-superadmin">
-            <div class="stat-icon">👑</div>
+            <div class="stat-icon">
+              <i class="bi bi-shield-fill-check"></i>
+            </div>
             <div class="stat-info">
               <h3>{{ superAdminCount }}</h3>
               <p>Super Admins</p>
@@ -38,21 +53,24 @@
         </div>
       </div>
 
-      <!-- Alerta -->
-      <div v-if="alert.message" :class="`alert alert-${alert.type}`" role="alert">
-        {{ alert.message }}
-      </div>
+      <!-- Alerta de Bootstrap -->
+      <AlertComponent
+        v-model="showAlert"
+        :message="alert.message"
+        :type="alert.type"
+        :duration="3000"
+      />
 
       <!-- Tabla de Usuarios -->
       <div class="table-container">
         <table class="table table-dark table-hover">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Acciones</th>
+              <th><i class="bi bi-hash me-1"></i>ID</th>
+              <th><i class="bi bi-person-fill me-1"></i>Nombre</th>
+              <th><i class="bi bi-envelope-fill me-1"></i>Email</th>
+              <th><i class="bi bi-shield-fill me-1"></i>Rol</th>
+              <th><i class="bi bi-gear-fill me-1"></i>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -67,21 +85,22 @@
               </td>
               <td>
                 <div class="btn-group">
-                  <select 
-                    v-model="user.role" 
-                    @change="updateUserRole(user)" 
-                    class="form-select form-select-sm bg-dark text-white"
+                  <button 
+                    @click="openModalForEdit(user)" 
+                    class="btn btn-sm btn-primary"
+                    title="Editar usuario"
                   >
-                    <option value="user">Usuario</option>
-                    <option value="admin">Admin</option>
-                    <option value="superadmin">Super Admin</option>
-                  </select>
+                    <i class="bi bi-pencil-fill me-1"></i>
+                    Editar
+                  </button>
                   <button 
                     @click="confirmDelete(user)" 
-                    class="btn btn-sm btn-danger ms-2"
+                    class="btn btn-sm btn-danger"
                     :disabled="user.username === currentUser"
+                    title="Eliminar usuario"
                   >
-                    🗑️
+                    <i class="bi bi-trash-fill me-1"></i>
+                    Eliminar
                   </button>
                 </div>
               </td>
@@ -93,109 +112,148 @@
       <!-- Botón Volver -->
       <div class="mt-4">
         <router-link to="/dashboard" class="btn btn-secondary">
-          ← Volver al Dashboard
+          <i class="bi bi-arrow-left me-2"></i>
+          Volver al Dashboard
         </router-link>
       </div>
     </div>
 
-    <!-- Modal de Confirmación -->
-    <div v-if="showDeleteModal" class="modal-overlay" @click.self="showDeleteModal = false">
-      <div class="modal-content-small">
-        <h4 class="text-white mb-3">⚠️ Confirmar Eliminación</h4>
-        <p class="text-white">¿Estás seguro de que deseas eliminar al usuario <strong>{{ userToDelete?.name }}</strong>?</p>
-        <p class="text-danger">Esta acción no se puede deshacer.</p>
-        <div class="d-flex gap-2 mt-4">
-          <button @click="deleteUser" class="btn btn-danger flex-fill">Eliminar</button>
-          <button @click="showDeleteModal = false" class="btn btn-secondary flex-fill">Cancelar</button>
-        </div>
-      </div>
-    </div>
+    <!-- Modal de Usuario (Crear/Editar) -->
+    <UserModal
+      :show="showUserModal"
+      :user="selectedUser"
+      @close="closeUserModal"
+      @saved="handleSaveUser"
+    />
+
+    <!-- Modal de Confirmación de Eliminación -->
+    <ConfirmModal
+      :show="showDeleteModal"
+      title="Confirmar Eliminación"
+      :message="`¿Estás seguro de que deseas eliminar al usuario '${userToDelete?.name}'?`"
+      warningMessage="Esta acción no se puede deshacer."
+      confirmText="Eliminar"
+      cancelText="Cancelar"
+      confirmType="danger"
+      @confirm="deleteUser"
+      @cancel="showDeleteModal = false"
+      @close="showDeleteModal = false"
+    />
   </div>
 </template>
 
-<script>
-import { getUsers, updateUser, deleteUser } from '../service/api'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { getUsers, createUser, updateUser, deleteUser as deleteUserAPI } from '../service/api'
+import UserModal from '../components/UserModal.vue'
+import ConfirmModal from '../components/ConfirmModal.vue'
+import AlertComponent from '../components/AlertComponent.vue'
 
-export default {
-  name: 'UserManagementView',
-  data() {
-    return {
-      users: [],
-      alert: { message: '', type: 'success' },
-      currentUser: localStorage.getItem('username'),
-      showDeleteModal: false,
-      userToDelete: null
-    }
-  },
-  computed: {
-    totalUsers() {
-      return this.users.length
-    },
-    adminCount() {
-      return this.users.filter(u => u.role === 'admin').length
-    },
-    superAdminCount() {
-      return this.users.filter(u => u.role === 'superadmin').length
-    }
-  },
-  mounted() {
-    this.loadUsers()
-  },
-  methods: {
-    async loadUsers() {
-      try {
-        const response = await getUsers()
-        this.users = response.data
-      } catch (error) {
-        console.error('Error al cargar usuarios:', error)
-        this.showAlert('Error al cargar usuarios', 'danger')
-      }
-    },
-    getRoleLabel(role) {
-      const labels = {
-        'user': '👤 Usuario',
-        'admin': '🔧 Admin',
-        'superadmin': '👑 Super Admin'
-      }
-      return labels[role] || role
-    },
-    async updateUserRole(user) {
-      try {
-        await updateUser(user.id, { role: user.role })
-        this.showAlert(`Rol actualizado a ${this.getRoleLabel(user.role)}`, 'success')
-      } catch (error) {
-        console.error('Error al actualizar rol:', error)
-        this.showAlert('Error al actualizar el rol', 'danger')
-      }
-    },
-    confirmDelete(user) {
-      if (user.username === this.currentUser) {
-        this.showAlert('No puedes eliminarte a ti mismo', 'warning')
-        return
-      }
-      this.userToDelete = user
-      this.showDeleteModal = true
-    },
-    async deleteUser() {
-      try {
-        await deleteUser(this.userToDelete.id)
-        this.users = this.users.filter(u => u.id !== this.userToDelete.id)
-        this.showAlert('Usuario eliminado exitosamente', 'success')
-        this.showDeleteModal = false
-        this.userToDelete = null
-      } catch (error) {
-        console.error('Error al eliminar usuario:', error)
-        this.showAlert('Error al eliminar el usuario', 'danger')
-      }
-    },
-    showAlert(message, type) {
-      this.alert = { message, type }
-      setTimeout(() => {
-        this.alert = { message: '', type: 'success' }
-      }, 3000)
-    }
+// Estados principales
+const users = ref([])
+const currentUser = localStorage.getItem('username')
+
+// Estados de modales
+const showUserModal = ref(false)
+const selectedUser = ref(null)
+const showDeleteModal = ref(false)
+const userToDelete = ref(null)
+
+// Estados de alertas
+const showAlert = ref(false)
+const alert = ref({ message: '', type: 'success' })
+
+// Computed
+const totalUsers = computed(() => users.value.length)
+const adminCount = computed(() => users.value.filter(u => u.role === 'admin').length)
+const superAdminCount = computed(() => users.value.filter(u => u.role === 'superadmin').length)
+
+// Funciones
+const loadUsers = async () => {
+  try {
+    const response = await getUsers()
+    users.value = response.data
+  } catch (error) {
+    console.error('Error al cargar usuarios:', error)
+    displayAlert('Error al cargar usuarios', 'danger')
   }
 }
+
+const getRoleLabel = (role) => {
+  const labels = {
+    'user': '👤 Usuario',
+    'admin': '🔧 Admin',
+    'superadmin': '👑 Super Admin'
+  }
+  return labels[role] || role
+}
+
+const openModalForCreate = () => {
+  selectedUser.value = null
+  showUserModal.value = true
+}
+
+const openModalForEdit = (user) => {
+  selectedUser.value = { ...user }
+  showUserModal.value = true
+}
+
+const closeUserModal = () => {
+  showUserModal.value = false
+  selectedUser.value = null
+}
+
+const handleSaveUser = async (userData) => {
+  try {
+    if (selectedUser.value?.id) {
+      // Actualizar usuario existente
+      await updateUser(selectedUser.value.id, userData)
+      const index = users.value.findIndex(u => u.id === selectedUser.value.id)
+      if (index !== -1) {
+        users.value[index] = { ...users.value[index], ...userData }
+      }
+      displayAlert('✅ Usuario actualizado correctamente', 'success')
+    } else {
+      // Crear nuevo usuario
+      const response = await createUser(userData)
+      users.value.push(response.data)
+      displayAlert('✅ Usuario creado correctamente', 'success')
+    }
+    closeUserModal()
+  } catch (error) {
+    console.error('Error al guardar usuario:', error)
+    displayAlert('❌ Error al guardar el usuario', 'danger')
+  }
+}
+
+const confirmDelete = (user) => {
+  if (user.username === currentUser) {
+    displayAlert('⚠️ No puedes eliminarte a ti mismo', 'warning')
+    return
+  }
+  userToDelete.value = user
+  showDeleteModal.value = true
+}
+
+const deleteUser = async () => {
+  try {
+    await deleteUserAPI(userToDelete.value.id)
+    users.value = users.value.filter(u => u.id !== userToDelete.value.id)
+    displayAlert('✅ Usuario eliminado exitosamente', 'success')
+    showDeleteModal.value = false
+    userToDelete.value = null
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error)
+    displayAlert('❌ Error al eliminar el usuario', 'danger')
+  }
+}
+
+const displayAlert = (message, type) => {
+  alert.value = { message, type }
+  showAlert.value = true
+}
+
+onMounted(loadUsers)
 </script>
 
 <style scoped>

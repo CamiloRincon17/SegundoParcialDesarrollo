@@ -1,15 +1,25 @@
 <template>
   <div class="sidebar p-3 ">
     <div class="d-flex flex-column h-100">
-      <h3 class="mb-4">Estas en Admin</h3>
+      <h3 class="mb-4">
+        <i class="bi bi-speedometer2 me-2"></i>
+        Admin Panel
+      </h3>
       <nav class="nav flex-column ">
-        <router-link class="sidebar-link" to="/dashboard">Dashboard</router-link>
+        <router-link class="sidebar-link" to="/dashboard">
+          <i class="bi bi-house-door-fill me-2"></i>
+          Dashboard
+        </router-link>
 
-        <router-link class="sidebar-link" to="/productos">Página Principal</router-link>
+        <router-link class="sidebar-link" to="/productos">
+          <i class="bi bi-globe me-2"></i>
+          Página Principal
+        </router-link>
 
       </nav>
       <div class="mt-auto">
         <button class="btn btn-outline-light w-100" @click="logout">
+          <i class="bi bi-box-arrow-right me-2"></i>
           Cerrar Sesión
         </button>
       </div>

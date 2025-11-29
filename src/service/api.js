@@ -41,6 +41,7 @@ export const deleteMovie = (id) => api.delete(`/productos/${id}`)
 // Funciones de autenticación (recurso: users)
 export const getUsers = () => api.get('/users')
 export const getUserByEmail = (email) => api.get(`/users?username=${email}`)
+export const createUser = (data) => api.post('/users', data)
 export const loginUser = async (email, password) => {
   try {
     const response = await api.get(`/users?username=${email}`)

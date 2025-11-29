@@ -3,6 +3,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { getMovies, createMovie, updateMovie, deleteMovie } from '@/service/api'
 import MovieModal from '@/components/MovieModal.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
+import AlertComponent from '@/components/AlertComponent.vue'
 
 // Estados principales
 const movies = ref([])
@@ -12,6 +14,14 @@ const error = ref(null)
 // Estados del modal
 const showModal = ref(false)
 const selectedMovie = ref(null)
+
+// Estados de confirmación de eliminación
+const showDeleteModal = ref(false)
+const movieToDelete = ref(null)
+
+// Estados de alerta
+const showAlert = ref(false)
+const alert = ref({ message: '', type: 'success' })
 
 // Estados de búsqueda y filtro
 const searchQuery = ref('')
@@ -51,7 +61,7 @@ const fetchMovies = async () => {
     const response = await getMovies()
     movies.value = response.data || []
   } catch (err) {
-    error.value = 'No se pudieron cargar las películas. Verifica que el servidor API esté corriendo.'
+    error.value = 'No se pudieron cargar los productos. Verifica que el servidor API esté corriendo.'
   } finally {
     loading.value = false
   }
@@ -64,33 +74,34 @@ const handleSave = async (movieData) => {
       await updateMovie(selectedMovie.value.id, movieData)
       const index = movies.value.findIndex(m => m.id === selectedMovie.value.id)
       if (index !== -1) movies.value[index] = { ...movieData, id: selectedMovie.value.id }
-      alert('✅ Película actualizada correctamente')
+      displayAlert('✅ Producto actualizado correctamente', 'success')
     } else {
       // Crear
       const response = await createMovie(movieData)
       movies.value.push(response.data)
-      alert('✅ Película creada correctamente')
+      displayAlert('✅ Producto creado correctamente', 'success')
     }
     closeModal()
   } catch (err) {
-    alert('❌ Error al guardar la película.')
+    displayAlert('❌ Error al guardar el producto', 'danger')
     console.error(err)
   }
 }
 
-const handleDelete = async (id) => {
-  const movie = movies.value.find(m => m.id === id)
-  if (!movie) return
+const confirmDeleteMovie = (movie) => {
+  movieToDelete.value = movie
+  showDeleteModal.value = true
+}
 
-  const confirmDelete = confirm(`¿Estás seguro de eliminar "${movie.title}"?\nEsta acción no se puede deshacer.`)
-  if (!confirmDelete) return
-
+const handleDelete = async () => {
   try {
-    await deleteMovie(id)
-    movies.value = movies.value.filter(m => m.id !== id)
-    alert('✅ Película eliminada correctamente')
+    await deleteMovie(movieToDelete.value.id)
+    movies.value = movies.value.filter(m => m.id !== movieToDelete.value.id)
+    displayAlert('✅ Producto eliminado correctamente', 'success')
+    showDeleteModal.value = false
+    movieToDelete.value = null
   } catch (err) {
-    alert('❌ Error al eliminar la película.')
+    displayAlert('❌ Error al eliminar el producto', 'danger')
     console.error(err)
   }
 }
@@ -112,23 +123,37 @@ const closeModal = () => {
   selectedMovie.value = null
 }
 
+const displayAlert = (message, type) => {
+  alert.value = { message, type }
+  showAlert.value = true
+}
+
 onMounted(fetchMovies)
 </script>
 
 <template>
   <div class="container-fluid">
-    <h1 class="mb-4">Gestión de Películas</h1>
+    <h1 class="mb-4">
+      <i class="bi bi-box-seam me-2"></i>
+      Gestión de Productos
+    </h1>
 
     <!-- Barra de acciones y filtros -->
     <div class="card mb-4">
       <div class="card-body">
         <div class="row g-3 align-items-end">
           <div class="col-md-4">
-            <label class="form-label">Buscar</label>
+            <label class="form-label">
+              <i class="bi bi-search me-1"></i>
+              Buscar
+            </label>
             <input v-model="searchQuery" type="text" class="form-control" placeholder="Título, descripción...">
           </div>
           <div class="col-md-3">
-            <label class="form-label">Género</label>
+            <label class="form-label">
+              <i class="bi bi-funnel me-1"></i>
+              Género
+            </label>
             <select v-model="selectedGenre" class="form-select">
               <option value="">Todos</option>
               <option v-for="genre in availableGenres" :key="genre" :value="genre">{{ genre }}</option>
@@ -140,15 +165,25 @@ onMounted(fetchMovies)
               to="/users" 
               class="btn btn-warning me-2"
             >
-              👥 Gestión de Usuarios
+              <i class="bi bi-people-fill me-1"></i>
+              Gestión de Usuarios
             </router-link>
             <button @click="openModalForCreate" class="btn btn-success">
-              <i class="bi bi-plus-circle me-1"></i> Nueva Película
+              <i class="bi bi-plus-circle me-1"></i>
+              Nuevo Producto
             </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Alerta de Bootstrap -->
+    <AlertComponent
+      v-model="showAlert"
+      :message="alert.message"
+      :type="alert.type"
+      :duration="3000"
+    />
 
     <!-- ESTADO: CARGANDO -->
     <div v-if="loading" class="text-center my-5">
@@ -160,26 +195,29 @@ onMounted(fetchMovies)
     <div v-else-if="error" class="alert alert-danger d-flex align-items-center">
       <i class="bi bi-exclamation-triangle-fill me-2"></i>
       <div class="flex-grow-1">{{ error }}</div>
-      <button @click="fetchMovies" class="btn btn-sm btn-outline-danger">Reintentar</button>
+      <button @click="fetchMovies" class="btn btn-sm btn-outline-danger">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        Reintentar
+      </button>
     </div>
 
     <!-- ESTADO: SIN RESULTADOS -->
     <div v-else-if="filteredMovies.length === 0" class="alert alert-info text-center">
       <i class="bi bi-info-circle me-2"></i>
-      {{ searchQuery || selectedGenre ? 'No se encontraron películas con esos filtros.' : 'No hay películas registradas.' }}
+      {{ searchQuery || selectedGenre ? 'No se encontraron productos con esos filtros.' : 'No hay productos registrados.' }}
     </div>
 
-    <!-- TABLA DE PELÍCULAS -->
+    <!-- TABLA DE PRODUCTOS -->
     <div v-else class="table-responsive">
       <table class="table table-hover align-middle">
         <thead class="table-light">
           <tr>
-            <th>Póster</th>
-            <th>Título</th>
-            <th>Género</th>
-            <th>Año</th>
-            <th>Precio (COP)</th>
-            <th>Acciones</th>
+            <th><i class="bi bi-image me-1"></i>Póster</th>
+            <th><i class="bi bi-card-heading me-1"></i>Título</th>
+            <th><i class="bi bi-tag me-1"></i>Género</th>
+            <th><i class="bi bi-calendar-event me-1"></i>Año</th>
+            <th><i class="bi bi-cash me-1"></i>Precio (COP)</th>
+            <th><i class="bi bi-gear-fill me-1"></i>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -193,11 +231,13 @@ onMounted(fetchMovies)
             <td>${{ movie.price?.toLocaleString('es-CO') || '0' }}</td>
             <td>
               <div class="btn-group">
-                <button @click="openModalForEdit(movie)" class="btn btn-sm btn-success">
-                  <i class="bi bi-pencil-fill"></i> Editar
+                <button @click="openModalForEdit(movie)" class="btn btn-sm btn-primary" title="Editar producto">
+                  <i class="bi bi-pencil-fill me-1"></i>
+                  Editar
                 </button>
-                <button @click="handleDelete(movie.id)" class="btn btn-sm btn-outline-danger">
-                  <i class="bi bi-trash-fill"></i> Eliminar
+                <button @click="confirmDeleteMovie(movie)" class="btn btn-sm btn-danger" title="Eliminar producto">
+                  <i class="bi bi-trash-fill me-1"></i>
+                  Eliminar
                 </button>
               </div>
             </td>
@@ -206,13 +246,27 @@ onMounted(fetchMovies)
       </table>
     </div>
 
-    <!-- MODAL -->
+    <!-- MODAL PRODUCTO -->
     <MovieModal
       :show="showModal"
       :movie="selectedMovie"
       :genres="genresForModal"
       @close="closeModal"
       @saved="handleSave"
+    />
+
+    <!-- MODAL CONFIRMACIÓN ELIMINACIÓN -->
+    <ConfirmModal
+      :show="showDeleteModal"
+      title="Confirmar Eliminación de Producto"
+      :message="`¿Estás seguro de que deseas eliminar el producto '${movieToDelete?.title}'?`"
+      warningMessage="Esta acción no se puede deshacer."
+      confirmText="Eliminar Producto"
+      cancelText="Cancelar"
+      confirmType="danger"
+      @confirm="handleDelete"
+      @cancel="showDeleteModal = false"
+      @close="showDeleteModal = false"
     />
   </div>
 </template>

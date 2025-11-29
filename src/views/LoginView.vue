@@ -234,7 +234,7 @@ export default {
           localStorage.setItem('username', user.username)
 
           // Redirige al usuario según su rol.
-          if (user.role === 'admin') {
+          if (user.role === 'admin' || user.role === 'superadmin') {
             this.$router.push('/dashboard')
           } else {
             this.$router.push('/productos')
