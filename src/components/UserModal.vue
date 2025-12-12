@@ -218,7 +218,7 @@ watch(() => props.show, (newVal) => {
 
 .modal-header {
   border-bottom: 2px solid #dee2e6;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #66ea92 0%, #033526 100%);
   color: white;
 }
 
