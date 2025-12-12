@@ -3,7 +3,10 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-success ">
     <div class="container-fluid">
       <!-- se linkea el nombre como si fuera un boton para mandarte a la parte de productos -->
-      <router-link class="navbar-brand" to="/productos">Film Galaxy</router-link>
+      <router-link class="navbar-brand" to="/productos">
+        <i class="bi bi-camera-reels-fill me-2"></i>
+        Film Galaxy
+      </router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>

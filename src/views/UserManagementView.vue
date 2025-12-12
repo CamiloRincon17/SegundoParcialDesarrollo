@@ -4,11 +4,10 @@
       <!-- Header -->
       <div class="header-section mb-4 d-flex justify-content-between align-items-center">
         <div>
-          <h1 class="text-white mb-2">
+          <h1 class="text-success mb-2">
             <i class="bi bi-people-fill me-2"></i>
             Gestión de Usuarios
           </h1>
-          <p class="text-muted">Administra roles y permisos de los usuarios del sistema</p>
         </div>
         <button @click="openModalForCreate" class="btn btn-success btn-lg">
           <i class="bi bi-plus-circle me-2"></i>
@@ -287,7 +286,48 @@ onMounted(loadUsers)
 }
 
 .stat-icon {
-  font-size: 3rem;
+  font-size: 3.5rem;
+  transition: all 0.3s ease;
+}
+
+.stat-icon i {
+  transition: all 0.3s ease;
+}
+
+/* Iconos coloridos para cada tipo de estadística */
+.stat-total .stat-icon i {
+  color: #00ff90;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 144, 0.4));
+}
+
+.stat-admin .stat-icon i {
+  color: #3b82f6;
+  filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.4));
+}
+
+.stat-superadmin .stat-icon i {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.4));
+}
+
+/* Hover effects para los iconos */
+.stat-card:hover .stat-icon i {
+  transform: scale(1.1);
+}
+
+.stat-total:hover .stat-icon i {
+  filter: drop-shadow(0 0 10px rgba(0, 255, 144, 0.6));
+}
+
+.stat-admin:hover .stat-icon i {
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+
+.stat-superadmin:hover .stat-icon i {
+  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
 }
 
 .stat-info h3 {
